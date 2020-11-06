@@ -19,6 +19,4 @@ func StartServer() {
 		},
 		MaxAge: 12 * time.Hour,
 	}))
-
-	
 }

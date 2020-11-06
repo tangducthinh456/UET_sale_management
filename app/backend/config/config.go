@@ -24,9 +24,9 @@ func InitConfig(){
     config = viper.New()
     config.SetConfigName("config")
     config.SetConfigType("yaml")
-    config.AddConfigPath("./config")
+	config.AddConfigPath(".")
+    config.AddConfigPath("./config/")
 	config.AddConfigPath("../config/")
-
 	if err := config.ReadInConfig(); err != nil {
 		log.Fatalf("Can not read the config file : %+v", err)
 	}
@@ -62,11 +62,11 @@ func GetDBConfig() *DBConfig{
 
 func dbConfigInit() {
 	dbconfig = &DBConfig{
-		Host:     config.GetString("db.Host"),
-		Port:     config.GetString("db.Port"),
-		DBName:   config.GetString("db.DBName"),
-		Username: config.GetString("db.Username"),
-		Password: config.GetString("db.Password"),
+		Host:     config.GetString("database.Host"),
+		Port:     config.GetString("database.Port"),
+		DBName:   config.GetString("database.database"),
+		Username: config.GetString("database.user"),
+		Password: config.GetString("database.Password"),
 	}
 }
 
