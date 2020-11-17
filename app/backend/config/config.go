@@ -13,20 +13,21 @@ var (
 	redisconfig *RedisConfig
 )
 
-func Init(){
-	InitConfig()
+func Init(path string){
+	InitConfig(path)
 	serverConfigInit()
 	dbConfigInit()
 	redisConfigInit()
 }
 
-func InitConfig(){
+func InitConfig(path string){
     config = viper.New()
     config.SetConfigName("config")
     config.SetConfigType("yaml")
 	config.AddConfigPath(".")
     config.AddConfigPath("./config/")
 	config.AddConfigPath("../config/")
+    config.AddConfigPath(path)
 	if err := config.ReadInConfig(); err != nil {
 		log.Fatalf("Can not read the config file : %+v", err)
 	}

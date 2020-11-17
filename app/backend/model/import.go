@@ -3,23 +3,22 @@ package model
 import "time"
 
 type Import struct {
-	ImportId          int           `json:"import_id" gorm:"primaryKey; autoIncrement:true"`
-	CreatedTime       time.Time     `json:"created_time"`
-	Note              string        `json:"note"`
-	ProviderId        string        `json:"provider_id" gorm:"column:provider"`
-	Provider          Provider      `json:"-" gorm:"foreignKey:provider;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	ProviderDetail    Customer      `json:"provider_detail" gorm:"-"`
-	CreatedUser       int           `json:"created_user"`
-	CreatedUserDetail User          `json:"created_user_detail" gorm:"-"`
-	User              User          `gorm:"foreignKey:created_user;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
-	Details           []*ImportLine `json:"details" gorm:"-"`
+	ImportID      uint          `json:"import_id" gorm:"primaryKey; autoIncrement:true"`
+	Note          string        `json:"note"`
+	ProviderID    string        `json:"-"`
+	Provider      Provider      `json:"provider" gorm:"foreignKey:ProviderID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	CreatedUserID uint          `json:"-"`
+	CreatedUser   User          `json:"created_user" gorm:"foreignKey:CreatedUserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Details       []*ImportLine `json:"details" gorm:"foreignKey:ImportID"`
+	CreatedAt     time.Time     `json:"created_time"`
 }
 
 type ImportLine struct {
-	Import    Import  `gorm:"foreignKey:import;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
-	Product   Product `gorm:"foreignKey:product;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
-	ImportID  string  `gorm:"primaryKey; column:import"`
-	ProductId string  `gorm:"primaryKey; column:product"`
+	//LineID    uint    `gorm:"primaryKey; autoIncrement:true"`
+	Import    Import  `gorm:"foreignKey:ImportID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
+	Product   Product `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
+	ImportID  uint    `gorm:"primaryKey;"`
+	ProductID uint    `gorm:"primaryKey;"`
 	Quantity  int
 	Note      string
 }

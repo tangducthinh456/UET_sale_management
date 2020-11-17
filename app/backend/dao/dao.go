@@ -5,23 +5,51 @@ import (
 	"SaleManagement/model"
 	"context"
 	"fmt"
-	"gorm.io/gorm"
 	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var gDB *gorm.DB
 
-type dao interface{
-    InitDatabaseConnection() error
+type dao interface {
+	InitDatabaseConnection() error
 
-    MigrateDataModel() error
+	MigrateDataModel(ctx context.Context) error
 
-	GetBillByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string]string) ([]*model.Bill, error)
+	
+    GetUsersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.User, error)
+	CreateUser(ctx context.Context, user *model.User) error
+	UpdateUser(ctx context.Context, id uint, user *model.User) error
+	DisableUser(ctx context.Context, id uint) error
+	EnableUser(ctx context.Context, id uint) error
 
-	GetImportByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string]string) ([]*model.Import, error)
+	//GetProviderByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Provider, error)
+	//CreateProvider(ctx context.Context, provider *model.Provider) error
+	//UpdateProvider(ctx context.Context, id uint, provider *model.Provider) error
+	//DeleteProvider(ctx context.Context, id uint) error
+	//
+	//GetCustomerByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Customer, error)
+	//CreateCustomer(ctx context.Context, customer *model.Customer) error
+	//UpdateCustomer(ctx context.Context, id uint, customer *model.Customer) error
+	//DeleteCustomer(ctx context.Context, id uint) error
+	//
+	//GetProductByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Product, error)
+	//CreateProduct(ctx context.Context, product *model.Product) error
+	//UpdateProduct(ctx context.Context, id uint, product *model.Product) error
+	//DeleteProduct(ctx context.Context, id uint) error
+	//
+	//GetBillsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Bill, error)
+	//CreateBill(ctx context.Context, bill *model.Bill) error
+	//UpdateBill(ctx context.Context, id uint, bill *model.Bill) error
+	//DeleteBill(ctx context.Context, id uint) error
+	//
+	//GetImportsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Import, error)
+	//CreateImport(ctx context.Context, imp *model.Import) error
+	//UpdateImport(ctx context.Context, id uint, imp *model.Import) error
+	//DeleteImport(ctx context.Context, id uint) error
 }
 
-func (c *DAO) InitDatabaseConnection()(err error){
+func (c *DAO) InitDatabaseConnection() (err error) {
 	conn := config.GetDBConfig()
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s port=%s host=%s sslmode=disable",
 		conn.Username, conn.Password, conn.DBName,
@@ -30,109 +58,94 @@ func (c *DAO) InitDatabaseConnection()(err error){
 	return
 }
 
-func (c *DAO) MigrateDataModel() error{
-	if !gDB.Migrator().HasTable(&model.User{}){
-		er := gDB.Migrator().CreateTable(&model.User{})
-		if er != nil{
-			return er
-		}
-	}
-	if !gDB.Migrator().HasTable(&model.Provider{}){
-		er := gDB.Migrator().CreateTable(&model.Provider{})
-		if er != nil{
-			return er
-		}
-	}
-	if !gDB.Migrator().HasTable(&model.Customer{}){
-		er := gDB.Migrator().CreateTable(&model.Customer{})
-		if er != nil{
-			return er
-		}
-	}
-	if !gDB.Migrator().HasTable(&model.Group{}){
-		er := gDB.Migrator().CreateTable(&model.Group{})
-		if er != nil{
-			return er
-		}
-	}
-	if !gDB.Migrator().HasTable(&model.Product{}){
-		er := gDB.Migrator().CreateTable(&model.Product{})
-		if er != nil{
-			return er
-		}
-	}
-	if !gDB.Migrator().HasTable(&model.Bill{}){
-		er := gDB.Migrator().CreateTable(&model.Bill{})
-		if er != nil{
-			return er
-		}
-	}
-	if !gDB.Migrator().HasTable(&model.BillLine{}){
-		er := gDB.Migrator().CreateTable(&model.BillLine{})
-		if er != nil{
-			return er
-		}
-	}
-	if !gDB.Migrator().HasTable(&model.Import{}){
-		er := gDB.Migrator().CreateTable(&model.Import{})
-		if er != nil{
-			return er
-		}
-	}
-	if !gDB.Migrator().HasTable(&model.ImportLine{}){
-		er := gDB.Migrator().CreateTable(&model.ImportLine{})
-		if er != nil{
-			return er
-		}
-	}
-	return nil
+func (c *DAO) MigrateDataModel(ctx context.Context)(er error) {
+	er = gDB.WithContext(ctx).AutoMigrate(&model.Customer{}, &model.User{}, &model.Provider{}, &model.Group{},
+	&model.Product{}, &model.Bill{}, &model.BillLine{}, &model.Import{}, &model.ImportLine{})
+	return
 }
 
-func (c* DAO) GetBillByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string]string) ([]*model.Bill, error){
-	var bil = []*model.Bill{}
-	thisDB := gDB.WithContext(ctx).Table("customers")
-	for k, v := range filter{
-		thisDB = thisDB.Where(fmt.Sprintf("%s = ?", k), v)
+func (c *DAO) GetUsersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.User, error){
+	var user = []*model.User{}
+	thisDB := gDB.WithContext(ctx).Model(&model.User{})
+	for k, v := range filter {
+		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Find(&bil).Error
-	if er != nil{
+	er := thisDB.Find(&user).Error
+	if er != nil {
+		return nil, er
+	}
+	return user, nil
+}
+
+func (c *DAO) CreateUser(ctx context.Context, user *model.User) error{
+	er := gDB.WithContext(ctx).Model(&model.User{}).Create(&user).Error
+	return er
+}
+
+func (c *DAO) UpdateUser(ctx context.Context, id uint, user *model.User) error{
+    er := gDB.WithContext(ctx).Model(&model.User{}).Where("user_id = ?", id).Save(&user).Error
+    return er
+}
+
+func(c *DAO) DisableUser(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Where("user_id = ?", id).Update("is_active", false).Error
+	return er
+}
+
+func(c *DAO) EnableUser(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Where("user_id = ?", id).Update("is_active", true).Error
+	return er
+}
+
+
+
+
+func (c *DAO) GetBillsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Bill, error) {
+	var bil = []*model.Bill{}
+	thisDB := gDB.WithContext(ctx).Model(&model.Bill{})
+	for k, v := range filter {
+		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
+	}
+	offset := pageToken - 1
+	thisDB = thisDB.Offset(offset).Limit(pageSize)
+	er := thisDB.Preload("bill_lines").Find(&bil).Error
+	if er != nil {
 		return nil, er
 	}
 
-	for i, v := range bil{
-		var lin = []*model.BillLine{}
-		er = gDB.WithContext(ctx).Table("bill_lines").Where("bill = ?", v.BillId).Find(&lin).Error
-		if er != nil{
-			return nil, er
-		}
-		bil[i].Details = lin
-	}
+	//for i, v := range bil {
+	//	var lin = []*model.BillLine{}
+	//	er = gDB.WithContext(ctx).Table("bill_lines").Where("bill = ?", v.BillId).Find(&lin).Error
+	//	if er != nil {
+	//		return nil, er
+	//	}
+	//	bil[i].Details = lin
+	//}
 	return bil, nil
 }
 
-func (c* DAO) GetImportByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string]string) ([]*model.Import, error){
+func (c *DAO) GetImportsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Import, error) {
 	var imp = []*model.Import{}
 	thisDB := gDB.WithContext(ctx).Table("customers")
-	for k, v := range filter{
-		thisDB = thisDB.Where(fmt.Sprintf("%s = ?", k), v)
+	for k, v := range filter {
+		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Find(&imp).Error
-	if er != nil{
+	er := thisDB.Preload("import_lines").Find(&imp).Error
+	if er != nil {
 		return nil, er
 	}
-
-	for i, v := range imp{
-		var lin = []*model.ImportLine{}
-		er = gDB.WithContext(ctx).Table("import_lines").Where("import = ?", v.ImportId).Find(&lin).Error
-		if er != nil{
-			return nil, er
-		}
-		imp[i].Details = lin
-	}
+	//for i, v := range imp {
+	//	var lin = []*model.ImportLine{}
+	//	er = gDB.WithContext(ctx).Table("import_lines").Where("import = ?", v.ImportID).Find(&lin).Error
+	//	if er != nil {
+	//		return nil, er
+	//	}
+	//	imp[i].Details = lin
+	//}
 	return imp, nil
 }
 
@@ -140,6 +153,6 @@ type DAO struct{}
 
 var d dao = &DAO{}
 
-func GetDAO() dao{
+func GetDAO() dao {
 	return d
 }

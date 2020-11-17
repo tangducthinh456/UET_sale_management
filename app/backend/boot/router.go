@@ -1,4 +1,4 @@
-package router
+package boot
 
 import (
 	"github.com/gin-contrib/cors"
