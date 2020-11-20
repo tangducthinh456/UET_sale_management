@@ -23,16 +23,19 @@ type dao interface {
 	DisableUser(ctx context.Context, id uint) error
 	EnableUser(ctx context.Context, id uint) error
 
-	//GetProviderByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Provider, error)
-	//CreateProvider(ctx context.Context, provider *model.Provider) error
-	//UpdateProvider(ctx context.Context, id uint, provider *model.Provider) error
-	//DeleteProvider(ctx context.Context, id uint) error
-	//
-	//GetCustomerByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Customer, error)
-	//CreateCustomer(ctx context.Context, customer *model.Customer) error
-	//UpdateCustomer(ctx context.Context, id uint, customer *model.Customer) error
-	//DeleteCustomer(ctx context.Context, id uint) error
-	//
+	GetProvidersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Provider, error)
+	CreateProvider(ctx context.Context, provider *model.Provider) error
+	UpdateProvider(ctx context.Context, id uint, provider *model.Provider) error
+	DisableProvider(ctx context.Context, id uint) error
+	EnableProvider(ctx context.Context, id uint) error
+
+	
+	GetCustomersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Customer, error)
+	CreateCustomer(ctx context.Context, customer *model.Customer) error
+	UpdateCustomer(ctx context.Context, id uint, customer *model.Customer) error
+	DisableCustomer(ctx context.Context, id uint) error
+	EnableCustomer(ctx context.Context, id uint) error
+	
 	//GetProductByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Product, error)
 	//CreateProduct(ctx context.Context, product *model.Product) error
 	//UpdateProduct(ctx context.Context, id uint, product *model.Product) error
@@ -80,27 +83,106 @@ func (c *DAO) GetUsersByFilter(ctx context.Context, pageSize int, pageToken int,
 }
 
 func (c *DAO) CreateUser(ctx context.Context, user *model.User) error{
-	er := gDB.WithContext(ctx).Model(&model.User{}).Create(&user).Error
-	return er
+	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
+		user.IsActive = true
+		er = tx.WithContext(ctx).Model(&model.User{}).Create(&user).Error
+		return er
+	})
 }
 
 func (c *DAO) UpdateUser(ctx context.Context, id uint, user *model.User) error{
-    er := gDB.WithContext(ctx).Model(&model.User{}).Where("user_id = ?", id).Save(&user).Error
+	user.UserID = id
+	er := gDB.WithContext(ctx).Model(&model.User{}).Where(&model.User{UserID: id}).Save(&user).Error
     return er
 }
 
 func(c *DAO) DisableUser(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Where("user_id = ?", id).Update("is_active", false).Error
+	er := gDB.WithContext(ctx).Model(&model.User{}).Where(&model.User{UserID: id}).Updates(&model.User{IsActive: false}).Error
 	return er
 }
 
 func(c *DAO) EnableUser(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Where("user_id = ?", id).Update("is_active", true).Error
+	er := gDB.WithContext(ctx).Model(&model.User{}).Where(&model.User{UserID: id}).Updates(&model.User{IsActive: true}).Error
 	return er
 }
 
+func (c *DAO) GetProvidersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Provider, error){
+	var prov = []*model.Provider{}
+	thisDB := gDB.WithContext(ctx).Model(&model.Provider{})
+	for k, v := range filter {
+		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
+	}
+	offset := pageToken - 1
+	thisDB = thisDB.Offset(offset).Limit(pageSize)
+	er := thisDB.Find(&prov).Error
+	if er != nil {
+		return nil, er
+	}
+	return prov, nil
+}
 
+func (c *DAO) CreateProvider(ctx context.Context, provider *model.Provider) error{
+	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
+		provider.IsActive = true
+		er = tx.WithContext(ctx).Model(&model.Provider{}).Create(&provider).Error
+		return er
+	})
+}
 
+func (c *DAO) UpdateProvider(ctx context.Context, id uint, provider *model.Provider) error{
+	provider.ProviderID = id
+	er := gDB.WithContext(ctx).Model(&model.Provider{}).Where(&model.Provider{ProviderID: id}).Save(&provider).Error
+	return er
+}
+
+func(c *DAO) DisableProvider(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Model(&model.Provider{}).Where(&model.Provider{ProviderID: id}).Updates(&model.Provider{IsActive: false}).Error
+	return er
+}
+
+func(c *DAO) EnableProvider(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Model(&model.Provider{}).Where(&model.Provider{ProviderID: id}).Updates(&model.Provider{IsActive: true}).Error
+	return er
+}
+
+func (c *DAO) GetCustomersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Customer, error){
+	var prov = []*model.Customer{}
+	thisDB := gDB.WithContext(ctx).Model(&model.Customer{})
+	for k, v := range filter {
+		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
+	}
+	offset := pageToken - 1
+	thisDB = thisDB.Offset(offset).Limit(pageSize)
+	er := thisDB.Find(&prov).Error
+	if er != nil {
+		return nil, er
+	}
+	return prov, nil
+}
+
+func (c *DAO) CreateCustomer(ctx context.Context, customer *model.Customer) error{
+	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
+		customer.IsActive = true
+		er = tx.WithContext(ctx).Model(&model.Customer{}).Create(&customer).Error
+		return er
+	})
+}
+
+func (c *DAO) UpdateCustomer(ctx context.Context, id uint, customer *model.Customer) error{
+	customer.CustomerID = id
+	er := gDB.WithContext(ctx).Model(&model.Customer{}).Where(&model.Customer{CustomerID: id}).Save(&customer).Error
+	return er
+}
+
+func(c *DAO) DisableCustomer(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Model(&model.Customer{}).Where(&model.Customer{CustomerID: id}).Updates(&model.Customer{IsActive: false}).Error
+	return er
+}
+
+func(c *DAO) EnableCustomer(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Model(&model.Customer{}).Where(&model.Customer{CustomerID: id}).Updates(&model.Customer{IsActive: true}).Error
+	return er
+}
 
 func (c *DAO) GetBillsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Bill, error) {
 	var bil = []*model.Bill{}

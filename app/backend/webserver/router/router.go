@@ -15,9 +15,19 @@ func NewRouter() *gin.Engine {
 		user := api.Group("/users")
 		{
 			user.GET("", controller.HandleGETUsers)
-			//user.POST("")
-			//user.PUT("/:id")
-			//user.DELETE("/:id")
+			user.POST("", controller.HandlePOSTUsers)
+			user.PUT("/:user", controller.HandlePUTUser)
+			user.DELETE("/:user", controller.HandleDisableUser)
+			user.POST("/:user", controller.HandleEnableUser)
+		}
+
+		provider := api.Group("/providers")
+		{
+			provider.GET("", controller.HandleGETProviders)
+			provider.POST("", controller.HandlePOSTProviders)
+			provider.PUT("/:provider", controller.HandlePUTProvider)
+			provider.DELETE("/:provider", controller.HandleDisableProvider)
+			provider.POST("/:provider", controller.HandleEnableProvider)
 		}
 	}
 	return router

@@ -4,7 +4,6 @@ import (
 	"SaleManagement/config"
 	"SaleManagement/model"
 	"context"
-	"fmt"
 	"log"
 	"testing"
 	"time"
@@ -20,16 +19,23 @@ var (
 	}
 	user = model.User{
 		//UserID:      0,
-		Username:    "huyennt",
-		Name:        "Nguyễn Thanh Huyền",
-		Password:    "Ilovemath",
+		Username:    "user",
+		Name:        "Nguyễn User",
+		Password:    []byte("Ilovemath"),
 		Role:        "MANAGER",
 		PhoneNumber: "0987678978",
-		Email:       "huyenlovemath@gmail.com",
+		Email:       "ilovemath@gmail.com",
+	}
+	provider = model.Provider{
+		//ProviderID:   0,
+		ProviderName: "Công ty TNHH MTV mtp",
+		PhoneNumber:  "123456789",
+		Address:      "144, Xuân Thuy",
+		Email:        "mtp@tangducthinh.com",
 	}
 	group = model.Group{
-		GroupID:   0,
-		GroupName: "",
+		//GroupID:   ,
+		GroupName: "but",
 		Products:  nil,
 	}
 	product = model.Product{
@@ -74,9 +80,13 @@ func TestMain(m *testing.M) {
 	if er != nil {
 		log.Fatal(er)
 	}
-	u := &model.User{}
-	gDB.Model(&model.User{}).Where("user_id = ?", 1).Take(&u)
-	fmt.Println(u)
+	er = gDB.Model(&model.Provider{}).Create(&provider).Error
+	if er != nil {
+		log.Fatal(er)
+	}
+	//u := &model.User{}
+	//gDB.Model(&model.User{}).Where("user_id = ?", 1).Take(&u)
+	//fmt.Println(u)
 }
 
 func createSampleDatabase() {
