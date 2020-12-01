@@ -29,6 +29,47 @@ func NewRouter() *gin.Engine {
 			provider.DELETE("/:provider", controller.HandleDisableProvider)
 			provider.POST("/:provider", controller.HandleEnableProvider)
 		}
+
+		customer := api.Group("/customers")
+		{
+			customer.GET("", controller.HandleGETCustomers)
+			customer.POST("", controller.HandlePOSTCustomers)
+			customer.PUT("/:customer", controller.HandlePUTCustomer)
+			customer.DELETE("/:customer", controller.HandleDisableCustomer)
+			customer.POST("/:customer", controller.HandleEnableCustomer)
+		}
+
+		group := api.Group("/groups")
+		{
+			group.GET("", controller.HandleGetGroups)
+			group.POST("", controller.HandlePostGroup)
+		}
+
+		product := api.Group("/products")
+		{
+			product.GET("", controller.HandleGETProducts)
+			product.POST("", controller.HandlePOSTProducts)
+			product.PUT("/:product", controller.HandlePUTProduct)
+			product.DELETE("/:product", controller.HandleDisableProduct)
+			product.POST("/:product", controller.HandleEnableProduct)
+		}
+
+		bill := api.Group("/bills")
+		{
+			bill.GET("", controller.HandleGETBills)
+			bill.POST("", controller.HandlePOSTBills)
+			bill.PUT("/:bill", controller.HandlePUTBill)
+			bill.DELETE("/:bill", controller.HandleDeleteBill)
+		}
+
+		imp := api.Group("/imports")
+		{
+			imp.GET("", controller.HandleGETImports)
+			imp.POST("", controller.HandlePOSTImports)
+			imp.PUT("/:import", controller.HandlePUTImport)
+			imp.DELETE("/:import", controller.HandleDeleteImport)
+		}
+
 	}
 	return router
 }

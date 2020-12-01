@@ -17,7 +17,7 @@ type BillLine struct {
 	Bill      Bill    `gorm:"foreignKey:BillID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
 	Product   Product `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
 	BillID    uint    `gorm:"primaryKey;"`
-	ProductID string  `gorm:"primaryKey; "`
+	ProductID uint    `gorm:"primaryKey; "`
 	Quantity  int
 	Note      string
 }

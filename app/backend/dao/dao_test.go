@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	customer1 = model.Customer{
+	customer = model.Customer{
 		//CustomerID:   0,
 		CustomerName: "ThinhTd",
 		DOB:          time.Now(),
@@ -35,8 +35,8 @@ var (
 	}
 	group = model.Group{
 		//GroupID:   ,
-		GroupName: "but",
-		Products:  nil,
+		GroupName: "butbibabi",
+		//Products:  nil,
 	}
 	product = model.Product{
 		//ProductID:   0,
@@ -47,21 +47,50 @@ var (
 		Brand:         "Thien Long",
 		Position:      "Ngan 1",
 		IsOnSale:      true,
-		GroupID:       0,
-		CreatedUserID: 0,
+		GroupID:       1,
+		CreatedUserID: 1,
 		Description:   "but bi thien long",
 		CreatedAt:     time.Now(),
 	}
-	bill1 = model.Bill{
+	bill = model.Bill{
 		//BillID:         0,
-		CustomerID:     0,
+		CustomerID:     1,
 		CustomerDetail: model.Customer{},
-		Note:           "",
-		CreatedUserID:  0,
-		CreatedUser:    model.User{},
-		Details:        nil,
-		CreatedTime:    time.Time{},
+		Note:           "bill ban 1 but",
+		CreatedUserID:  1,
+		//CreatedUser:    model.User{},
+		Details: []*model.BillLine{
+			{
+				//Bill:      model.Bill{},
+				//Product:   model.Product{},
+				//BillID:    0,
+				ProductID: 1,
+				Quantity:  10,
+				Note:      "This is but bi",
+			},
+		},
+		CreatedTime: time.Time{},
 	}
+	imp = model.Import{
+		//ImportID:      0,
+		Note:          "This is import note",
+		ProviderID:    1,
+		//Provider:      model.Provider{},
+		CreatedUserID: 1,
+		//CreatedUser:   model.User{},
+		Details:       []*model.ImportLine{
+			{
+				//Import:    model.Import{},
+				//Product:   model.Product{},
+				//ImportID:  0,
+				ProductID: 1,
+				Quantity:  7,
+				Note:      "This is import note",
+			},
+		},
+		CreatedAt:     time.Time{},
+	}
+
 )
 
 func TestMain(m *testing.M) {
@@ -84,9 +113,14 @@ func TestMain(m *testing.M) {
 	if er != nil {
 		log.Fatal(er)
 	}
-	//u := &model.User{}
-	//gDB.Model(&model.User{}).Where("user_id = ?", 1).Take(&u)
-	//fmt.Println(u)
+	er = gDB.Model(&model.Group{}).Create(&group).Error
+	if er != nil {
+		log.Fatal(er)
+	}
+	er = gDB.Model(&model.Customer{}).Create(&customer).Error
+	if er != nil {
+		log.Fatal(er)
+	}
 }
 
 func createSampleDatabase() {

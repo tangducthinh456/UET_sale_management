@@ -1,89 +1,118 @@
 package controller
 
-//
-//func HandleGETProviders(c *gin.Context){
-//	pageSize, pageToken, filter, er := ParseQueryGET(c)
-//	if er != nil{
-//		return
-//	}
-//	providers, er := dao.GetDAO().GetProvidersByFilter(c, pageSize, pageToken, filter)
-//	if er != nil{
-//		ResponseError(c, er ,http.StatusInternalServerError)
-//		return
-//	}
-//	c.JSON(http.StatusOK, &forms.ProviderGetResponse{Providers: providers})
-//	return
-//}
-//
-//func HandlePOSTProviders(c *gin.Context){
-//	var provider *model.Provider
-//	err := c.Bind(&provider)
-//	if err != nil{
-//		ResponseError(c, err, http.StatusBadRequest)
-//		log.Print("bind json error")
-//		return
-//	}
-//
-//	err = dao.GetDAO().CreateProvider(c, provider)
-//	if err != nil{
-//		ResponseError(c, err, http.StatusInternalServerError)
-//		log.Print("create in dao error")
-//		return
-//	}
-//	c.JSON(http.StatusOK, &forms.ProviderPostResponse{ID: provider.ProviderID})
-//}
-//
-//func HandlePUTProvider(c *gin.Context){
-//	var idStr = c.Param("provider")
-//	idInt, er := strconv.Atoi(idStr)
-//	if er != nil{
-//		ResponseError(c, er, http.StatusBadRequest)
-//		return
-//	}
-//	var provider *model.Provider
-//	err := c.Bind(&provider)
-//	if err != nil{
-//		ResponseError(c, err, http.StatusBadRequest)
-//		log.Print("bind json error")
-//		return
-//	}
-//
-//	err = dao.GetDAO().UpdateProvider(c, uint(idInt), provider)
-//	if err != nil{
-//		ResponseError(c, err, http.StatusInternalServerError)
-//		log.Print("update provider in dao error")
-//		return
-//	}
-//	c.JSON(http.StatusOK, &forms.ProviderPostResponse{ID: provider.ProviderID})
-//}
-//
-//func HandleDisableProvider(c *gin.Context){
-//	var idStr = c.Param("provider")
-//	idInt, er := strconv.Atoi(idStr)
-//	if er != nil{
-//		ResponseError(c, er, http.StatusBadRequest)
-//		return
-//	}
-//	er = dao.GetDAO().DisableProvider(c, uint(idInt))
-//	if er != nil{
-//		ResponseError(c, er, http.StatusInternalServerError)
-//		return
-//	}
-//	c.JSON(http.StatusOK, "Success")
-//}
-//
-//func HandleEnableProvider(c *gin.Context){
-//	var idStr = c.Param("provider")
-//	idInt, er := strconv.Atoi(idStr)
-//	if er != nil{
-//		ResponseError(c, er, http.StatusBadRequest)
-//		return
-//	}
-//	er = dao.GetDAO().EnableUser(c, uint(idInt))
-//	if er != nil{
-//		ResponseError(c, er, http.StatusInternalServerError)
-//		return
-//	}
-//	c.JSON(http.StatusOK, "Success")
-//}
-//
+import (
+	"SaleManagement/dao"
+	"SaleManagement/model"
+	"SaleManagement/webserver/forms"
+	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
+	"strconv"
+)
+
+func HandleGETProducts(c *gin.Context){
+	pageSize, pageToken, filter, er := ParseQueryGET(c)
+	if er != nil{
+		return
+	}
+	products, er := dao.GetDAO().GetProductsByFilter(c, pageSize, pageToken, filter)
+	if er != nil{
+		ResponseError(c, er ,http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, &forms.ProductGetResponse{Products: products})
+	return
+}
+
+func HandlePOSTProducts(c *gin.Context){
+	var product *model.Product
+	err := c.Bind(&product)
+	if err != nil{
+		ResponseError(c, err, http.StatusBadRequest)
+		log.Print("bind json error")
+		return
+	}
+
+	err = dao.GetDAO().CreateProduct(c, product)
+	if err != nil{
+		ResponseError(c, err, http.StatusInternalServerError)
+		log.Print("create in dao error")
+		return
+	}
+	c.JSON(http.StatusOK, &forms.ProductPostResponse{ID: product.ProductID})
+}
+
+func HandlePUTProduct(c *gin.Context){
+	var idStr = c.Param("product")
+	idInt, er := strconv.Atoi(idStr)
+	if er != nil{
+		ResponseError(c, er, http.StatusBadRequest)
+		return
+	}
+	var product *model.Product
+	err := c.Bind(&product)
+	if err != nil{
+		ResponseError(c, err, http.StatusBadRequest)
+		log.Print("bind json error")
+		return
+	}
+	err = dao.GetDAO().UpdateProduct(c, uint(idInt), product)
+	if err != nil{
+		ResponseError(c, err, http.StatusInternalServerError)
+		log.Print("update product in dao error")
+		return
+	}
+	c.JSON(http.StatusOK, &forms.ProductPostResponse{ID: product.ProductID})
+}
+
+func HandleDisableProduct(c *gin.Context){
+	var idStr = c.Param("product")
+	idInt, er := strconv.Atoi(idStr)
+	if er != nil{
+		ResponseError(c, er, http.StatusBadRequest)
+		return
+	}
+	er = dao.GetDAO().DisableProduct(c, uint(idInt))
+	if er != nil{
+		ResponseError(c, er, http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, "Success")
+}
+
+func HandleEnableProduct(c *gin.Context){
+	var idStr = c.Param("product")
+	idInt, er := strconv.Atoi(idStr)
+	if er != nil{
+		ResponseError(c, er, http.StatusBadRequest)
+		return
+	}
+	er = dao.GetDAO().EnableProduct(c, uint(idInt))
+	if er != nil{
+		ResponseError(c, er, http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, "Success")
+}
+
+func HandleGetGroups(c *gin.Context){
+	group, err := dao.GetDAO().GetGroups(c)
+	if err != nil{
+		ResponseError(c, err, http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, group)
+}
+
+func HandlePostGroup(c *gin.Context){
+	var group *model.Group
+	c.Bind(group)
+	err := dao.GetDAO().CreateGroup(c, group)
+	if err != nil{
+		ResponseError(c, err, http.StatusInternalServerError)
+	}
+	c.JSON(http.StatusOK, "Success")
+}
+
+
+

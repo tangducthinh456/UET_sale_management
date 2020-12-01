@@ -5,7 +5,7 @@ import "time"
 type Import struct {
 	ImportID      uint          `json:"import_id" gorm:"primaryKey; autoIncrement:true"`
 	Note          string        `json:"note"`
-	ProviderID    string        `json:"-"`
+	ProviderID    uint          `json:"-"`
 	Provider      Provider      `json:"provider" gorm:"foreignKey:ProviderID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	CreatedUserID uint          `json:"-"`
 	CreatedUser   User          `json:"created_user" gorm:"foreignKey:CreatedUserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
