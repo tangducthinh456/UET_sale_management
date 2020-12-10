@@ -26,13 +26,12 @@ func HandleGETBills(c *gin.Context){
 
 func HandlePOSTBills(c *gin.Context){
 	var bill *model.Bill
-	err := c.Bind(&bill)
+	err := c.BindJSON(&bill)
 	if err != nil{
+		log.Printf("bind json error %s", err.Error())
 		ResponseError(c, err, http.StatusBadRequest)
-		log.Print("bind json error")
 		return
 	}
-
 	err = dao.GetDAO().CreateBill(c, bill)
 	if err != nil{
 		ResponseError(c, err, http.StatusInternalServerError)
@@ -50,7 +49,7 @@ func HandlePUTBill(c *gin.Context){
 		return
 	}
 	var bill *model.Bill
-	err := c.Bind(&bill)
+	err := c.BindJSON(&bill)
 	if err != nil{
 		ResponseError(c, err, http.StatusBadRequest)
 		log.Print("bind json error")

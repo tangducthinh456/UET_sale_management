@@ -4,10 +4,14 @@ import (
 	"SaleManagement/dao"
 	"SaleManagement/model"
 	"SaleManagement/webserver/forms"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
+
+	//"time"
 )
 
 func HandleGETCustomers(c *gin.Context){
@@ -19,6 +23,9 @@ func HandleGETCustomers(c *gin.Context){
 	if er != nil{
 		ResponseError(c, er ,http.StatusInternalServerError)
 		return
+	}
+    for i := range customers{
+    	customers[i].DOBForm = fmt.Sprintf("%v", customers[i].DOB.Format(time.RFC3339))
 	}
 	c.JSON(http.StatusOK, &forms.CustomerGetResponse{Customers: customers})
 	return
@@ -32,7 +39,7 @@ func HandlePOSTCustomers(c *gin.Context){
 		log.Print("bind json error")
 		return
 	}
-
+    customer.DOB, _ = time.Parse(time.RFC3339, customer.DOBForm + "T00:00:00Z")
 	err = dao.GetDAO().CreateCustomer(c, customer)
 	if err != nil{
 		ResponseError(c, err, http.StatusInternalServerError)
@@ -73,7 +80,7 @@ func HandleDisableCustomer(c *gin.Context){
 		ResponseError(c, er, http.StatusBadRequest)
 		return
 	}
-	er = dao.GetDAO().DisableCustomer(c, uint(idInt))
+	er = dao.GetDAO().DeleteCustomer(c, uint(idInt))
 	if er != nil{
 		ResponseError(c, er, http.StatusInternalServerError)
 		return
@@ -81,18 +88,18 @@ func HandleDisableCustomer(c *gin.Context){
 	c.JSON(http.StatusOK, "Success")
 }
 
-func HandleEnableCustomer(c *gin.Context){
-	var idStr = c.Param("customer")
-	idInt, er := strconv.Atoi(idStr)
-	if er != nil{
-		ResponseError(c, er, http.StatusBadRequest)
-		return
-	}
-	er = dao.GetDAO().EnableCustomer(c, uint(idInt))
-	if er != nil{
-		ResponseError(c, er, http.StatusInternalServerError)
-		return
-	}
-	c.JSON(http.StatusOK, "Success")
-}
+//func HandleEnableCustomer(c *gin.Context){
+//	var idStr = c.Param("customer")
+//	idInt, er := strconv.Atoi(idStr)
+//	if er != nil{
+//		ResponseError(c, er, http.StatusBadRequest)
+//		return
+//	}
+//	er = dao.GetDAO().EnableCustomer(c, uint(idInt))
+//	if er != nil{
+//		ResponseError(c, er, http.StatusInternalServerError)
+//		return
+//	}
+//	c.JSON(http.StatusOK, "Success")
+//}
 

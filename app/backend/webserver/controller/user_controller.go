@@ -89,7 +89,7 @@ func HandleDisableUser(c *gin.Context){
 		ResponseError(c, er, http.StatusBadRequest)
 		return
 	}
-	er = dao.GetDAO().DisableUser(c, uint(idInt))
+	er = dao.GetDAO().DeleteUser(c, uint(idInt))
 	if er != nil{
 		ResponseError(c, er, http.StatusInternalServerError)
 		return
@@ -97,17 +97,17 @@ func HandleDisableUser(c *gin.Context){
 	c.JSON(http.StatusOK, "Success")
 }
 
-func HandleEnableUser(c *gin.Context){
-	var idStr = c.Param("user")
-	idInt, er := strconv.Atoi(idStr)
-	if er != nil{
-		ResponseError(c, er, http.StatusBadRequest)
-		return
-	}
-	er = dao.GetDAO().EnableUser(c, uint(idInt))
-	if er != nil{
-		ResponseError(c, er, http.StatusInternalServerError)
-		return
-	}
-	c.JSON(http.StatusOK, "Success")
-}
+//func HandleEnableUser(c *gin.Context){
+//	var idStr = c.Param("user")
+//	idInt, er := strconv.Atoi(idStr)
+//	if er != nil{
+//		ResponseError(c, er, http.StatusBadRequest)
+//		return
+//	}
+//	er = dao.GetDAO().EnableUser(c, uint(idInt))
+//	if er != nil{
+//		ResponseError(c, er, http.StatusInternalServerError)
+//		return
+//	}
+//	c.JSON(http.StatusOK, "Success")
+//}

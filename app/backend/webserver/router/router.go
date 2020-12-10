@@ -18,7 +18,7 @@ func NewRouter() *gin.Engine {
 			user.POST("", controller.HandlePOSTUsers)
 			user.PUT("/:user", controller.HandlePUTUser)
 			user.DELETE("/:user", controller.HandleDisableUser)
-			user.POST("/:user", controller.HandleEnableUser)
+			//user.POST("/:user", controller.HandleEnableUser)
 		}
 
 		provider := api.Group("/providers")
@@ -27,7 +27,7 @@ func NewRouter() *gin.Engine {
 			provider.POST("", controller.HandlePOSTProviders)
 			provider.PUT("/:provider", controller.HandlePUTProvider)
 			provider.DELETE("/:provider", controller.HandleDisableProvider)
-			provider.POST("/:provider", controller.HandleEnableProvider)
+			//provider.POST("/:provider", controller.HandleEnableProvider)
 		}
 
 		customer := api.Group("/customers")
@@ -36,7 +36,7 @@ func NewRouter() *gin.Engine {
 			customer.POST("", controller.HandlePOSTCustomers)
 			customer.PUT("/:customer", controller.HandlePUTCustomer)
 			customer.DELETE("/:customer", controller.HandleDisableCustomer)
-			customer.POST("/:customer", controller.HandleEnableCustomer)
+			//customer.POST("/:customer", controller.HandleEnableCustomer)
 		}
 
 		group := api.Group("/groups")
@@ -51,7 +51,7 @@ func NewRouter() *gin.Engine {
 			product.POST("", controller.HandlePOSTProducts)
 			product.PUT("/:product", controller.HandlePUTProduct)
 			product.DELETE("/:product", controller.HandleDisableProduct)
-			product.POST("/:product", controller.HandleEnableProduct)
+			//product.POST("/:product", controller.HandleEnableProduct)
 		}
 
 		bill := api.Group("/bills")

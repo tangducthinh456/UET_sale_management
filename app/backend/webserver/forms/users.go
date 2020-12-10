@@ -37,6 +37,5 @@ func ConvertUserDtoToDB(user UserDtoRequest) (*model.User, error) {
 		Role:        user.Role,
 		PhoneNumber: user.PhoneNumber,
 		Email:       user.Email,
-		IsActive:    true,
 	}, nil
 }

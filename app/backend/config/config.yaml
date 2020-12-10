@@ -11,3 +11,12 @@ redis:
   host: localhost
   port: 6379
   password: 1
+data:
+  customer: 300
+  provider: 50
+  group: 24
+  product: 2000
+  biil: 1000
+  billine: 10000
+  import : 1000
+  importline: 10000

@@ -8,6 +8,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"time"
 )
 
 var gDB *gorm.DB
@@ -21,27 +22,27 @@ type dao interface {
     GetUsersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.User, error)
 	CreateUser(ctx context.Context, user *model.User) error
 	UpdateUser(ctx context.Context, id uint, user *model.User) error
-	DisableUser(ctx context.Context, id uint) error
-	EnableUser(ctx context.Context, id uint) error
+	DeleteUser(ctx context.Context, id uint) error
+
 
 	GetProvidersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Provider, error)
 	CreateProvider(ctx context.Context, provider *model.Provider) error
 	UpdateProvider(ctx context.Context, id uint, provider *model.Provider) error
-	DisableProvider(ctx context.Context, id uint) error
-	EnableProvider(ctx context.Context, id uint) error
+	DeleteProvider(ctx context.Context, id uint) error
+
 
 	
 	GetCustomersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Customer, error)
 	CreateCustomer(ctx context.Context, customer *model.Customer) error
 	UpdateCustomer(ctx context.Context, id uint, customer *model.Customer) error
-	DisableCustomer(ctx context.Context, id uint) error
-	EnableCustomer(ctx context.Context, id uint) error
+	DeleteCustomer(ctx context.Context, id uint) error
+
 	
 	GetProductsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Product, error)
 	CreateProduct(ctx context.Context, product *model.Product) error
 	UpdateProduct(ctx context.Context, id uint, product *model.Product) error
-	DisableProduct(ctx context.Context, id uint) error
-	EnableProduct(ctx context.Context, id uint) error
+	DeleteProduct(ctx context.Context, id uint) error
+
 
 	GetGroup(ctx context.Context, name string) (*model.Group, error)
 	GetGroups(ctx context.Context) ([]*model.Group, error)
@@ -64,7 +65,7 @@ func (c *DAO) InitDatabaseConnection() (err error) {
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s port=%s host=%s sslmode=disable",
 		conn.Username, conn.Password, conn.DBName,
 		conn.Port, conn.Host)
-	gDB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	gDB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
 	return
 }
 
@@ -91,7 +92,7 @@ func (c *DAO) GetUsersByFilter(ctx context.Context, pageSize int, pageToken int,
 
 func (c *DAO) CreateUser(ctx context.Context, user *model.User) error{
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
-		user.IsActive = true
+		user.CreatedAt = time.Now()
 		er = tx.WithContext(ctx).Model(&model.User{}).Create(&user).Error
 		return er
 	})
@@ -103,19 +104,15 @@ func (c *DAO) UpdateUser(ctx context.Context, id uint, user *model.User) error{
     return er
 }
 
-func(c *DAO) DisableUser(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Model(&model.User{}).Where(&model.User{UserID: id}).Updates(&model.User{IsActive: false}).Error
+func(c *DAO) DeleteUser(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Model(&model.User{}).Where(&model.User{UserID: id}).Delete(&model.User{}).Error
 	return er
 }
 
-func(c *DAO) EnableUser(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Model(&model.User{}).Where(&model.User{UserID: id}).Updates(&model.User{IsActive: true}).Error
-	return er
-}
 
 func (c *DAO) GetProvidersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Provider, error){
 	var prov = []*model.Provider{}
-	thisDB := gDB.WithContext(ctx).Model(&model.Provider{})
+	thisDB := gDB.WithContext(ctx).Model(&model.Provider{}).Preload(clause.Associations)
 	for k, v := range filter {
 		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
 	}
@@ -130,7 +127,7 @@ func (c *DAO) GetProvidersByFilter(ctx context.Context, pageSize int, pageToken 
 
 func (c *DAO) CreateProvider(ctx context.Context, provider *model.Provider) error{
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
-		provider.IsActive = true
+		provider.CreatedAt = time.Now()
 		er = tx.WithContext(ctx).Model(&model.Provider{}).Create(&provider).Error
 		return er
 	})
@@ -142,19 +139,15 @@ func (c *DAO) UpdateProvider(ctx context.Context, id uint, provider *model.Provi
 	return er
 }
 
-func(c *DAO) DisableProvider(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Model(&model.Provider{}).Where(&model.Provider{ProviderID: id}).Updates(&model.Provider{IsActive: false}).Error
+func(c *DAO) DeleteProvider(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Model(&model.Provider{}).Where(&model.Provider{ProviderID: id}).Delete(&model.Provider{}).Error
 	return er
 }
 
-func(c *DAO) EnableProvider(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Model(&model.Provider{}).Where(&model.Provider{ProviderID: id}).Updates(&model.Provider{IsActive: true}).Error
-	return er
-}
 
 func (c *DAO) GetCustomersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Customer, error){
 	var prov = []*model.Customer{}
-	thisDB := gDB.WithContext(ctx).Model(&model.Customer{})
+	thisDB := gDB.WithContext(ctx).Model(&model.Customer{}).Preload(clause.Associations)
 	for k, v := range filter {
 		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
 	}
@@ -169,7 +162,7 @@ func (c *DAO) GetCustomersByFilter(ctx context.Context, pageSize int, pageToken 
 
 func (c *DAO) CreateCustomer(ctx context.Context, customer *model.Customer) error{
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
-		customer.IsActive = true
+		customer.CreatedAt = time.Now()
 		er = tx.WithContext(ctx).Model(&model.Customer{}).Create(&customer).Error
 		return er
 	})
@@ -181,19 +174,15 @@ func (c *DAO) UpdateCustomer(ctx context.Context, id uint, customer *model.Custo
 	return er
 }
 
-func(c *DAO) DisableCustomer(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Model(&model.Customer{}).Where(&model.Customer{CustomerID: id}).Updates(&model.Customer{IsActive: false}).Error
+func(c *DAO) DeleteCustomer(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Model(&model.Customer{}).Where(&model.Customer{CustomerID: id}).Delete(&model.Customer{}).Error
 	return er
 }
 
-func(c *DAO) EnableCustomer(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Model(&model.Customer{}).Where(&model.Customer{CustomerID: id}).Updates(&model.Customer{IsActive: true}).Error
-	return er
-}
 
 func (c *DAO) GetProductsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Product, error){
 	var prov = []*model.Product{}
-	thisDB := gDB.WithContext(ctx).Model(&model.Product{})
+	thisDB := gDB.WithContext(ctx).Model(&model.Product{}).Preload(clause.Associations)
 	for k, v := range filter {
 		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
 	}
@@ -208,7 +197,7 @@ func (c *DAO) GetProductsByFilter(ctx context.Context, pageSize int, pageToken i
 
 func (c *DAO) CreateProduct(ctx context.Context, product *model.Product) error{
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
-		product.IsOnSale = true
+		product.CreatedAt = time.Now()
 		er = tx.WithContext(ctx).Model(&model.Product{}).Create(&product).Error
 		return er
 	})
@@ -216,20 +205,15 @@ func (c *DAO) CreateProduct(ctx context.Context, product *model.Product) error{
 
 func (c *DAO) UpdateProduct(ctx context.Context, id uint, product *model.Product) error{
 	product.ProductID = id
-	product.IsOnSale = true
 	er := gDB.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: id}).Save(&product).Error
 	return er
 }
 
-func(c *DAO) DisableProduct(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: id}).Update("is_on_sale", false).Error
+func(c *DAO) DeleteProduct(ctx context.Context, id uint) error {
+	er := gDB.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: id}).Delete(&model.Product{}).Error
 	return er
 }
 
-func(c *DAO) EnableProduct(ctx context.Context, id uint) error {
-	er := gDB.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: id}).Update("is_on_sale", true).Error
-	return er
-}
 
 func (c *DAO) GetGroup(ctx context.Context, name string) (*model.Group, error) {
 	group := &model.Group{}
@@ -259,7 +243,7 @@ func (c *DAO) CreateGroup(ctx context.Context, group *model.Group) error {
 
 func (c *DAO) GetBillsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Bill, error){
 	var prov = []*model.Bill{}
-	thisDB := gDB.WithContext(ctx).Model(&model.Bill{})
+	thisDB := gDB.WithContext(ctx).Model(&model.Bill{}).Preload(clause.Associations)
 	for k, v := range filter {
 		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
 	}
@@ -274,12 +258,13 @@ func (c *DAO) GetBillsByFilter(ctx context.Context, pageSize int, pageToken int,
 
 func (c *DAO) CreateBill(ctx context.Context, bill *model.Bill) error{
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
+		bill.CreatedAt = time.Now()
 		er = tx.WithContext(ctx).Model(&model.Bill{}).Create(&bill).Error
 		if er != nil{
 			return er
 		}
 		for _, v := range bill.Details{
-			er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: v.ProductID}).
+			er = tx.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: v.ProductID}).
 				UpdateColumn("quantity", gorm.Expr("quantity - ?", v.Quantity)).Error
 			if er != nil{
 				return er
@@ -291,19 +276,35 @@ func (c *DAO) CreateBill(ctx context.Context, bill *model.Bill) error{
 
 func (c *DAO) UpdateBill(ctx context.Context, id uint, bill *model.Bill) error{
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
+		bothProduct :=  make(map[uint][2]int)
 		billBefore := &model.Bill{}
-		er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: id}).Take(&billBefore).Error
+		er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: id}).Preload(clause.Associations).Take(&billBefore).Error
 		if er != nil{
 			return er
+		}
+		for _, v := range billBefore.Details{
+			bothProduct[v.ProductID] = [2]int{v.Quantity, 0}
+		}
+		er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: id}).Delete(&model.Bill{}).Error
+		if er != nil{
+			return
+		}
+		er = tx.WithContext(ctx).Model(&model.BillLine{}).Where(&model.BillLine{BillID: id}).Delete(&model.BillLine{}).Error
+		if er != nil{
+			return
 		}
 		bill.BillID = id
-		er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: id}).Save(&bill).Error
+		er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: id}).Session(&gorm.Session{FullSaveAssociations: true}).Save(&bill).Error
 		if er != nil{
 			return er
 		}
-		for i, v := range bill.Details{
-			er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: v.ProductID}).
-				UpdateColumn("quantity", gorm.Expr("quantity - ?", v.Quantity - billBefore.Details[i].Quantity)).Error
+		for _, v := range bill.Details {
+		 bothProduct[v.ProductID] = [2]int{ bothProduct[v.ProductID][0], v.Quantity}
+		}
+		fmt.Println(bothProduct)
+		for k, v := range bothProduct{
+			er = tx.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: k}).
+				UpdateColumn("quantity", gorm.Expr("quantity - ?", v[1] - v[0])).Error
 			if er != nil{
 				return er
 			}
@@ -315,25 +316,32 @@ func (c *DAO) UpdateBill(ctx context.Context, id uint, bill *model.Bill) error{
 func(c *DAO) DeleteBill(ctx context.Context, id uint) error {
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
 		bill := &model.Bill{}
-		er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: id}).Take(&bill).Error
+		er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: id}).Preload(clause.Associations).Take(&bill).Error
 		if er != nil{
 			return er
 		}
 		for _, v := range bill.Details{
-			er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: v.ProductID}).
+			er = tx.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: v.ProductID}).
 				UpdateColumn("quantity", gorm.Expr("quantity + ?", v.Quantity)).Error
 			if er != nil{
 				return er
 			}
 		}
 		er = tx.WithContext(ctx).Model(&model.Bill{}).Where(&model.Bill{BillID: id}).Delete(&model.Bill{}).Error
+		if er != nil{
+			return
+		}
+		er = tx.WithContext(ctx).Model(&model.BillLine{}).Where(&model.BillLine{BillID: id}).Delete(&model.BillLine{}).Error
+		if er != nil{
+			return
+		}
 		return er
 	})
 }
 
 func (c *DAO) GetImportsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Import, error){
 	var prov = []*model.Import{}
-	thisDB := gDB.WithContext(ctx).Model(&model.Import{})
+	thisDB := gDB.WithContext(ctx).Model(&model.Import{}).Preload(clause.Associations)
 	for k, v := range filter {
 		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])
 	}
@@ -348,12 +356,13 @@ func (c *DAO) GetImportsByFilter(ctx context.Context, pageSize int, pageToken in
 
 func (c *DAO) CreateImport(ctx context.Context, imp *model.Import) error{
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
+		imp.CreatedAt = time.Now()
 		er = tx.WithContext(ctx).Model(&model.Import{}).Create(&imp).Error
 		if er != nil{
 			return er
 		}
 		for _, v := range imp.Details{
-			er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: v.ProductID}).
+			er = tx.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: v.ProductID}).
 				UpdateColumn("quantity", gorm.Expr("quantity + ?", v.Quantity)).Error
 			if er != nil{
 				return er
@@ -365,19 +374,35 @@ func (c *DAO) CreateImport(ctx context.Context, imp *model.Import) error{
 
 func (c *DAO) UpdateImport(ctx context.Context, id uint, imp *model.Import) error{
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
+		bothProduct :=  make(map[uint][2]int)
 		impBefore := &model.Import{}
-		er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: id}).Take(&impBefore).Error
+		er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: id}).Preload(clause.Associations).Take(&impBefore).Error
 		if er != nil{
 			return er
+		}
+		for _, v := range impBefore.Details{
+			bothProduct[v.ProductID] = [2]int{v.Quantity, 0}
+		}
+		er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: id}).Delete(&model.Import{}).Error
+		if er != nil{
+			return
+		}
+		er = tx.WithContext(ctx).Model(&model.ImportLine{}).Where(&model.ImportLine{ImportID: id}).Delete(&model.ImportLine{}).Error
+		if er != nil{
+			return
 		}
 		imp.ImportID = id
-		er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: id}).Save(&imp).Error
+		er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: id}).Session(&gorm.Session{FullSaveAssociations: true}).Save(&imp).Error
 		if er != nil{
 			return er
 		}
-		for i, v := range imp.Details{
-			er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: v.ImportID}).
-				UpdateColumn("quantity", gorm.Expr("quantity + ?", v.Quantity - impBefore.Details[i].Quantity)).Error
+		for _, v := range imp.Details {
+			bothProduct[v.ProductID] = [2]int{ bothProduct[v.ProductID][0], v.Quantity}
+		}
+		fmt.Println(bothProduct)
+		for k, v := range bothProduct{
+			er = tx.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: k}).
+				UpdateColumn("quantity", gorm.Expr("quantity + ?", v[1] - v[0])).Error
 			if er != nil{
 				return er
 			}
@@ -389,18 +414,25 @@ func (c *DAO) UpdateImport(ctx context.Context, id uint, imp *model.Import) erro
 func(c *DAO) DeleteImport(ctx context.Context, id uint) error {
 	return gDB.WithContext(ctx).Transaction(func(tx *gorm.DB) (er error) {
 		imp := &model.Import{}
-		er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: id}).Take(&imp).Error
+		er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: id}).Preload(clause.Associations).Take(&imp).Error
 		if er != nil{
 			return er
 		}
 		for _, v := range imp.Details{
-			er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: v.ProductID}).
+			er = tx.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: v.ProductID}).
 				UpdateColumn("quantity", gorm.Expr("quantity - ?", v.Quantity)).Error
 			if er != nil{
 				return er
 			}
 		}
 		er = tx.WithContext(ctx).Model(&model.Import{}).Where(&model.Import{ImportID: id}).Delete(&model.Import{}).Error
+		if er != nil{
+			return er
+		}
+		er = tx.WithContext(ctx).Model(&model.ImportLine{}).Where(&model.ImportLine{ImportID: id}).Delete(&model.ImportLine{}).Error
+		if er != nil{
+			return er
+		}
 		return er
 	})
 }

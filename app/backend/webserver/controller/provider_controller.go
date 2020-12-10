@@ -74,7 +74,7 @@ func HandleDisableProvider(c *gin.Context){
 		ResponseError(c, er, http.StatusBadRequest)
 		return
 	}
-	er = dao.GetDAO().DisableProvider(c, uint(idInt))
+	er = dao.GetDAO().DeleteProvider(c, uint(idInt))
 	if er != nil{
 		ResponseError(c, er, http.StatusInternalServerError)
 		return
@@ -82,17 +82,17 @@ func HandleDisableProvider(c *gin.Context){
 	c.JSON(http.StatusOK, "Success")
 }
 
-func HandleEnableProvider(c *gin.Context){
-	var idStr = c.Param("provider")
-	idInt, er := strconv.Atoi(idStr)
-	if er != nil{
-		ResponseError(c, er, http.StatusBadRequest)
-		return
-	}
-	er = dao.GetDAO().EnableProvider(c, uint(idInt))
-	if er != nil{
-		ResponseError(c, er, http.StatusInternalServerError)
-		return
-	}
-	c.JSON(http.StatusOK, "Success")
-}
+//func HandleEnableProvider(c *gin.Context){
+//	var idStr = c.Param("provider")
+//	idInt, er := strconv.Atoi(idStr)
+//	if er != nil{
+//		ResponseError(c, er, http.StatusBadRequest)
+//		return
+//	}
+//	er = dao.GetDAO().EnableProvider(c, uint(idInt))
+//	if er != nil{
+//		ResponseError(c, er, http.StatusInternalServerError)
+//		return
+//	}
+//	c.JSON(http.StatusOK, "Success")
+//}

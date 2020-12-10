@@ -26,7 +26,7 @@ func HandleGETImports(c *gin.Context){
 
 func HandlePOSTImports(c *gin.Context){
 	var imp *model.Import
-	err := c.Bind(&imp)
+	err := c.BindJSON(&imp)
 	if err != nil{
 		ResponseError(c, err, http.StatusBadRequest)
 		log.Print("bind json error")
@@ -43,14 +43,14 @@ func HandlePOSTImports(c *gin.Context){
 }
 
 func HandlePUTImport(c *gin.Context){
-	var idStr = c.Param("imp")
+	var idStr = c.Param("import")
 	idInt, er := strconv.Atoi(idStr)
 	if er != nil{
 		ResponseError(c, er, http.StatusBadRequest)
 		return
 	}
 	var imp *model.Import
-	err := c.Bind(&imp)
+	err := c.BindJSON(&imp)
 	if err != nil{
 		ResponseError(c, err, http.StatusBadRequest)
 		log.Print("bind json error")
@@ -67,7 +67,7 @@ func HandlePUTImport(c *gin.Context){
 }
 
 func HandleDeleteImport(c *gin.Context){
-	var idStr = c.Param("imp")
+	var idStr = c.Param("import")
 	idInt, er := strconv.Atoi(idStr)
 	if er != nil{
 		ResponseError(c, er, http.StatusBadRequest)

@@ -72,7 +72,7 @@ func HandleDisableProduct(c *gin.Context){
 		ResponseError(c, er, http.StatusBadRequest)
 		return
 	}
-	er = dao.GetDAO().DisableProduct(c, uint(idInt))
+	er = dao.GetDAO().DeleteProduct(c, uint(idInt))
 	if er != nil{
 		ResponseError(c, er, http.StatusInternalServerError)
 		return
@@ -80,20 +80,20 @@ func HandleDisableProduct(c *gin.Context){
 	c.JSON(http.StatusOK, "Success")
 }
 
-func HandleEnableProduct(c *gin.Context){
-	var idStr = c.Param("product")
-	idInt, er := strconv.Atoi(idStr)
-	if er != nil{
-		ResponseError(c, er, http.StatusBadRequest)
-		return
-	}
-	er = dao.GetDAO().EnableProduct(c, uint(idInt))
-	if er != nil{
-		ResponseError(c, er, http.StatusInternalServerError)
-		return
-	}
-	c.JSON(http.StatusOK, "Success")
-}
+//func HandleEnableProduct(c *gin.Context){
+//	var idStr = c.Param("product")
+//	idInt, er := strconv.Atoi(idStr)
+//	if er != nil{
+//		ResponseError(c, er, http.StatusBadRequest)
+//		return
+//	}
+//	er = dao.GetDAO().EnableProduct(c, uint(idInt))
+//	if er != nil{
+//		ResponseError(c, er, http.StatusInternalServerError)
+//		return
+//	}
+//	c.JSON(http.StatusOK, "Success")
+//}
 
 func HandleGetGroups(c *gin.Context){
 	group, err := dao.GetDAO().GetGroups(c)
@@ -106,8 +106,11 @@ func HandleGetGroups(c *gin.Context){
 
 func HandlePostGroup(c *gin.Context){
 	var group *model.Group
-	c.Bind(group)
-	err := dao.GetDAO().CreateGroup(c, group)
+	err := c.Bind(&group)
+	if err != nil{
+		ResponseError(c, err, http.StatusInternalServerError)
+	}
+	err = dao.GetDAO().CreateGroup(c, group)
 	if err != nil{
 		ResponseError(c, err, http.StatusInternalServerError)
 	}

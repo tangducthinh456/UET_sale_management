@@ -5,6 +5,7 @@ import (
 	"SaleManagement/model"
 	"context"
 	"log"
+	"os/exec"
 	"testing"
 	"time"
 )
@@ -46,45 +47,42 @@ var (
 		Quantity:      12,
 		Brand:         "Thien Long",
 		Position:      "Ngan 1",
-		IsOnSale:      true,
 		GroupID:       1,
 		CreatedUserID: 1,
 		Description:   "but bi thien long",
 		CreatedAt:     time.Now(),
 	}
 	bill = model.Bill{
-		//BillID:         0,
 		CustomerID:     1,
-		CustomerDetail: model.Customer{},
 		Note:           "bill ban 1 but",
 		CreatedUserID:  1,
-		//CreatedUser:    model.User{},
 		Details: []*model.BillLine{
 			{
-				//Bill:      model.Bill{},
-				//Product:   model.Product{},
-				//BillID:    0,
 				ProductID: 1,
 				Quantity:  10,
 				Note:      "This is but bi",
 			},
+			{
+				ProductID: 2,
+				Quantity:  13,
+				Note:      "This is but bi",
+			},
 		},
-		CreatedTime: time.Time{},
 	}
 	imp = model.Import{
 		//ImportID:      0,
 		Note:          "This is import note",
 		ProviderID:    1,
-		//Provider:      model.Provider{},
 		CreatedUserID: 1,
-		//CreatedUser:   model.User{},
 		Details:       []*model.ImportLine{
 			{
-				//Import:    model.Import{},
-				//Product:   model.Product{},
-				//ImportID:  0,
 				ProductID: 1,
 				Quantity:  7,
+				Note:      "This is import note",
+			},
+			{
+				ProductID: 2,
+				Quantity:  5,
 				Note:      "This is import note",
 			},
 		},
@@ -99,32 +97,32 @@ func TestMain(m *testing.M) {
 	if er != nil {
 		log.Fatal(er)
 	}
-
 	clearDatabase()
 	er = GetDAO().MigrateDataModel(context.Background())
 	if er != nil {
 		log.Fatal(er)
 	}
-	er = gDB.Model(&model.User{}).Create(&user).Error
-	if er != nil {
-		log.Fatal(er)
-	}
-	er = gDB.Model(&model.Provider{}).Create(&provider).Error
-	if er != nil {
-		log.Fatal(er)
-	}
-	er = gDB.Model(&model.Group{}).Create(&group).Error
-	if er != nil {
-		log.Fatal(er)
-	}
-	er = gDB.Model(&model.Customer{}).Create(&customer).Error
-	if er != nil {
-		log.Fatal(er)
-	}
+    genData()
+	//er = gDB.Model(&model.Customer{}).Create(&customer).Error
+	//if er != nil{
+	//	log.Fatal(er)
+	//}
 }
 
-func createSampleDatabase() {
-
+func genData(){
+	//dat, err := ioutil.ReadFile("data.sql")
+	//if err != nil{
+	//	log.Fatal(err)
+	//}
+	//err = gDB.Exec(string(dat)).Error
+	//if err != nil{
+	//	log.Fatal(err)
+	//}
+	cmd := exec.Command("psql", "postgres", "-d", "tool", "-f", "data.sql")
+	err := cmd.Run()
+	if err != nil{
+		log.Fatal(err)
+	}
 }
 
 func clearDatabase() {
