@@ -10,7 +10,7 @@ database:
 redis:
   host: localhost
   port: 6379
-  password: 1
+  password:
 data:
   customer: 300
   provider: 50
