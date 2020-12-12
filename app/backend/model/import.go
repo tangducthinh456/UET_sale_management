@@ -20,7 +20,7 @@ type Import struct {
 type ImportLine struct {
 	//LineID    uint    `gorm:"primaryKey; autoIncrement:true"`
 	Import    Import  `gorm:"foreignKey:ImportID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
-	Product   Product `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
+	Product   Product `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"product"`
 	ImportID  uint    `gorm:"primaryKey;" json:"-"`
 	ProductID uint    `gorm:"primaryKey;" json:"product_id"`
 	Quantity  int

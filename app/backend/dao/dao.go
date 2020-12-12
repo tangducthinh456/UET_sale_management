@@ -18,7 +18,7 @@ type dao interface {
 
 	MigrateDataModel(ctx context.Context) error
 
-	
+	GetUserByUsername(ctx context.Context, username string) (model.User, error)
     GetUsersByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.User, error)
 	CreateUser(ctx context.Context, user *model.User) error
 	UpdateUser(ctx context.Context, id uint, user *model.User) error
@@ -72,6 +72,11 @@ func (c *DAO) InitDatabaseConnection() (err error) {
 func (c *DAO) MigrateDataModel(ctx context.Context)(er error) {
 	er = gDB.WithContext(ctx).AutoMigrate(&model.Customer{}, &model.User{}, &model.Provider{}, &model.Group{},
 	&model.Product{}, &model.Bill{}, &model.BillLine{}, &model.Import{}, &model.ImportLine{})
+	return
+}
+
+func (c *DAO) GetUserByUsername(ctx context.Context, username string) (user model.User, er error) {
+	er = gDB.WithContext(ctx).Model(&model.User{}).Where(&model.User{Username: username}).Take(&user).Error
 	return
 }
 
@@ -249,7 +254,7 @@ func (c *DAO) GetBillsByFilter(ctx context.Context, pageSize int, pageToken int,
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Preload(clause.Associations).Find(&prov).Error
+	er := thisDB.Preload("Details.Product").Find(&prov).Error
 	if er != nil {
 		return nil, er
 	}
@@ -347,7 +352,7 @@ func (c *DAO) GetImportsByFilter(ctx context.Context, pageSize int, pageToken in
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Preload(clause.Associations).Find(&prov).Error
+	er := thisDB.Preload("Details.Product").Find(&prov).Error
 	if er != nil {
 		return nil, er
 	}

@@ -103,10 +103,8 @@ func TestMain(m *testing.M) {
 		log.Fatal(er)
 	}
     genData()
-	//er = gDB.Model(&model.Customer{}).Create(&customer).Error
-	//if er != nil{
-	//	log.Fatal(er)
-	//}
+	//dat, er := GetDAO().GetUserByID(context.Background(), 1)
+	//fmt.Println(dat)
 }
 
 func genData(){

@@ -5,6 +5,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+
+
 type UsersGetResponse struct {
 	Users []*model.User `json:"users"`
 }
@@ -39,3 +41,6 @@ func ConvertUserDtoToDB(user UserDtoRequest) (*model.User, error) {
 		Email:       user.Email,
 	}, nil
 }
+
+
+
