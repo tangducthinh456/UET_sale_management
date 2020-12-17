@@ -10,7 +10,7 @@
             <p class="category">Here is a filter for this table</p>
           </md-card-header>
           <md-card-content>
-            <simple-filter></simple-filter>
+            <simple-filter :productName.sync="productName"></simple-filter>
           </md-card-content>
         </md-card>
       </div>
@@ -22,7 +22,7 @@
             <p class="category">List product in shop</p>
           </md-card-header>
           <md-card-content>
-            <simple-product table-header-color="blue"></simple-product>
+            <simple-product table-header-color="blue" :product-name="productName"></simple-product>
           </md-card-content>
         </md-card>
       </div>
@@ -35,6 +35,21 @@ import { SimpleFilter, SimpleProduct } from "@/components";
 //import Filter from '../components/Tables/Filter.vue';
 
 export default {
+  data: function () {
+        return {
+            productName: null,
+            selectedGroup: "soap",
+            createdUser: "manager_01",
+            selectedDateFrom : null,
+            selectedDateTo : null
+       };
+  },
+  methods: {
+    getFilter(pd){
+      this.productName = pd;
+      console.log("aaaaaaaaaaaaaaaaa");
+    }
+  },
   components: {
     SimpleFilter,
     SimpleProduct

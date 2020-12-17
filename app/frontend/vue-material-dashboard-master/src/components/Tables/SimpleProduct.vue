@@ -30,9 +30,8 @@ export default {
             }
       }
       };
-      xhttp.open("GET", "http://localhost:8081/api/products?page_size=1000", true);
+      xhttp.open("GET", "http://localhost:8081/api/products?page_size=1000&filter=product_nameLIKE%25" + this.productName + "%25", true);
       xhttp.send(); 
-      //console.log(prod[0]);
   },
   props: {
     tableHeaderColor: {
@@ -45,6 +44,28 @@ export default {
       selected: [],
       products: prod
     };
+  },
+  props: ['selectedGroup', 'selectedCreated', 'selectedDateFrom', 'selectedDateTo', 'productName'],
+  watch: {
+  productName: function (newValue) {
+       var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+            while(prod.length > 0){ 
+              prod.pop();
+            }
+            //console.log("aaaaaaaaa");
+            var response = JSON.parse(this.responseText)
+            var varib = response.products
+            for (var i = 0; i < varib.length; i++){
+              prod.push({id: varib[i].product_id, name : varib[i].product_name, price : varib[i].price, quantity: varib[i].quantity})
+            }
+      }
+      };
+      xhttp.open("GET", "http://localhost:8081/api/products?page_size=1000&filter=product_nameLIKE%25" + this.productName + "%25", true);
+      xhttp.send(); 
+    }
   }
+  
 };
 </script>

@@ -2,7 +2,7 @@
   <div>
     <md-field >
       <label>Product Name</label>
-      <md-input ></md-input>
+      <md-input v-model="productName"  @keyup="$emit('update:productName', productName);"></md-input>
     </md-field>
     
     <md-autocomplete  v-model="selectedGroup" :md-options="createdGroup">
@@ -22,8 +22,10 @@
 </template>
 
 <script>
-  var group = []
-  var user = []
+  var group = [];
+ // var groupID = [];
+  var user = [];
+  //var userID = [];
   
   //xhttp.open("GET", "ajax_info.txt", true);
   //xhttp.send();
@@ -74,12 +76,21 @@
       textarea: null,
       autogrow: null,
       disabled: null,
+      productName: null,
       selectedGroup: null,
       selectedDateFrom: null,
       selectedDateTo: null,
       selectedCreated: null,
+      createdId : null,
+      groupId : null,
       createdGroup: group,
       createdUser: user,
-    })
+    }),
+    methods : {
+        getFilter(){
+          // for (var i = 0; i < )
+          this.$emit("getFilter", productName);//, groupId, createdId, selectedDateFrom, selectedDateTo)
+        }
+    }
   }
 </script>
