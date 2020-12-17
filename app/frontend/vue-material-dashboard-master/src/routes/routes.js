@@ -6,6 +6,7 @@ import TableList from "@/pages/TableList.vue";
 import Typography from "@/pages/Typography.vue";
 import Icons from "@/pages/Icons.vue";
 import Maps from "@/pages/Maps.vue";
+import Products from "@/pages/Products.vue";
 import Notifications from "@/pages/Notifications.vue";
 import UpgradeToPRO from "@/pages/UpgradeToPRO.vue";
 
@@ -29,6 +30,11 @@ const routes = [
         path: "table",
         name: "Table List",
         component: TableList
+      },
+      {
+        path: "product",
+        name: "Products",
+        component: Products
       },
       {
         path: "typography",

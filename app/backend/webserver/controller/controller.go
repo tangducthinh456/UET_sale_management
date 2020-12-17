@@ -13,7 +13,7 @@ const (
 	defaultPageSize string = "10"
 )
 
-var operators = [5]string{">=", "<=", ">", "<", "="}
+var operators = [6]string{">=", "<=", ">", "<", "=", "LIKE"}
 
 // ResponseError return response error
 func ResponseError(c *gin.Context, er error, statusCode int) {

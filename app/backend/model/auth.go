@@ -50,7 +50,7 @@ type Token struct {
 func (authM *AuthModel) CreateToken(userID uint, role uint) (*TokenDetails, error) {
 
 	tokenDetails := &TokenDetails{}
-	tokenDetails.AtExpires = time.Now().Add(time.Minute * 15).Unix()
+	tokenDetails.AtExpires = time.Now().Add(time.Minute * 180).Unix()
 	tokenDetails.AccessUUID = uuid.NewV4().String()
 
 	tokenDetails.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()

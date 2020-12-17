@@ -3,11 +3,20 @@ package router
 import (
 	"SaleManagement/webserver/controller"
 	"SaleManagement/webserver/middleware"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
+func configCORS() gin.HandlerFunc {
+	cfg := cors.DefaultConfig()
+	cfg.AllowOrigins = []string{"*", "*/"}
+	//cfg.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
+	return cors.New(cfg)
+}
+
 func NewRouter() *gin.Engine {
 	router := gin.Default()
+	router.Use(configCORS())
 	var authMid = new(middleware.AuthMiddleware)
 	api := router.Group("/api")
 	{
@@ -16,9 +25,9 @@ func NewRouter() *gin.Engine {
 
 		user := api.Group("/users")
 		{
+			user.GET("", controller.HandleGETUsers)
 			user.Use(authMid.TokenAuth())
 			user.Use(authMid.CheckRoleLevelMid([]int64{0}))
-			user.GET("", controller.HandleGETUsers)
 			user.POST("", controller.HandlePOSTUsers)
 			user.PUT("/:user", controller.HandlePUTUser)
 			user.DELETE("/:user", controller.HandleDisableUser)
@@ -27,9 +36,9 @@ func NewRouter() *gin.Engine {
 
 		provider := api.Group("/providers")
 		{
+			provider.GET("", controller.HandleGETProviders)
 			provider.Use(authMid.TokenAuth())
 			provider.Use(authMid.CheckRoleLevelMid([]int64{0}))
-			provider.GET("", controller.HandleGETProviders)
 			provider.POST("", controller.HandlePOSTProviders)
 			provider.PUT("/:provider", controller.HandlePUTProvider)
 			provider.DELETE("/:provider", controller.HandleDisableProvider)
@@ -49,16 +58,18 @@ func NewRouter() *gin.Engine {
 
 		group := api.Group("/groups")
 		{
+			group.GET("", controller.HandleGetGroups)
 			group.Use(authMid.TokenAuth())
 			group.Use(authMid.CheckRoleLevelMid([]int64{0, 1}))
-			group.GET("", controller.HandleGetGroups)
+			//group.GET("", controller.HandleGetGroups)
 			group.POST("", controller.HandlePostGroup)
 		}
 
 		product := api.Group("/products")
 		{
-			product.Use(authMid.TokenAuth())
 			product.GET("", controller.HandleGETProducts)
+			product.Use(authMid.TokenAuth())
+
 			product.POST("", controller.HandlePOSTProducts)
 			product.PUT("/:product", controller.HandlePUTProduct)
 			product.DELETE("/:product", controller.HandleDisableProduct)
