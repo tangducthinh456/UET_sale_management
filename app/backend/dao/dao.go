@@ -187,6 +187,7 @@ func(c *DAO) DeleteCustomer(ctx context.Context, id uint) error {
 
 func (c *DAO) GetProductsByFilter(ctx context.Context, pageSize int, pageToken int, filter map[string][]string) ([]*model.Product, error){
 	var prov = []*model.Product{}
+	//fmt.Println(filter)
 	thisDB := gDB.WithContext(ctx).Model(&model.Product{}).Preload(clause.Associations)
 	for k, v := range filter {
 		thisDB = thisDB.Where(fmt.Sprintf("%s %s ?", k, v[0]), v[1])

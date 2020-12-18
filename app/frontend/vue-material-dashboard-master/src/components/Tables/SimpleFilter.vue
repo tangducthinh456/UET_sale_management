@@ -2,7 +2,7 @@
   <div>
     <md-field >
       <label>Product Name</label>
-      <md-input v-model="productName"  @keyup="$emit('update:productName', productName);"></md-input>
+      <md-input v-model="productName"  ></md-input>
     </md-field>
     
     <md-autocomplete  v-model="selectedGroup" :md-options="createdGroup">
@@ -23,9 +23,9 @@
 
 <script>
   var group = [];
- // var groupID = [];
+ var groupFull = [];
   var user = [];
-  //var userID = [];
+  var userFull = [];
   
   //xhttp.open("GET", "ajax_info.txt", true);
   //xhttp.send();
@@ -40,7 +40,8 @@
             var response = JSON.parse(this.responseText)
             //console.log(response[0].group_name)
             for (var i = 0; i < response.length; i++){
-              group.push(response[i].group_name)
+              group.push(response[i].group_name);
+              groupFull.push(response[i]);
             }
       }
       };
@@ -57,6 +58,7 @@
             //console.log(this.responseText)
             for (var i = 0; i < response.users.length; i++){
               user.push(response.users[i].username)
+              userFull.push(response.users[i]);
             }
       }
       };
@@ -86,11 +88,36 @@
       createdGroup: group,
       createdUser: user,
     }),
-    methods : {
-        getFilter(){
-          // for (var i = 0; i < )
-          this.$emit("getFilter", productName);//, groupId, createdId, selectedDateFrom, selectedDateTo)
+    watch :{
+      selectedGroup : function(){
+        for (var i = 0; i < groupFull.length; i++){
+          if (groupFull[i].group_name == this.selectedGroup){
+            this.groupId = groupFull[i].group_id;
+          }
         }
+        this.$emit('update:groupId', this.groupId);
+      },
+      selectedCreated : function(){
+        for (var i = 0; i < userFull.length; i++){
+          if (userFull[i].username == this.selectedCreated){
+            this.createdId = userFull[i].id;
+          }
+        }
+        
+        this.$emit('update:createdId', this.createdId);
+      },
+      productName : function(){
+        this.$emit('update:productName', this.productName);
+       
+      },
+      selectedDateFrom : function(){
+        this.$emit('update:selectedDateFrom', this.selectedDateFrom);
+       
+      },
+      selectedDateTo : function(){
+        this.$emit('update:selectedDateTo', this.selectedDateTo);
+       
+      }
     }
   }
 </script>

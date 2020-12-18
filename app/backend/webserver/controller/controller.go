@@ -66,5 +66,6 @@ func ParseQueryGET(c *gin.Context)(pageSize int, pageToken int, filterMap map[st
 			}
 		}
 	}
+	//fmt.Println(filterMap)
 	return
 }

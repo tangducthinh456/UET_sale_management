@@ -30,7 +30,7 @@ export default {
             }
       }
       };
-      xhttp.open("GET", "http://localhost:8081/api/products?page_size=1000&filter=product_nameLIKE%25" + this.productName + "%25", true);
+      xhttp.open("GET", "http://localhost:8081/api/products?page_size=1000", true);
       xhttp.send(); 
   },
   props: {
@@ -45,9 +45,10 @@ export default {
       products: prod
     };
   },
-  props: ['selectedGroup', 'selectedCreated', 'selectedDateFrom', 'selectedDateTo', 'productName'],
+  props: ['productName', 'createdId', 'selectedDateFrom', 'selectedDateTo', 'groupId'],
   watch: {
   productName: function (newValue) {
+    //console.log(this.selectedDateFrom.toISOString(), this.selectedDateTo.toISOString());
        var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
@@ -62,10 +63,14 @@ export default {
             }
       }
       };
-      xhttp.open("GET", "http://localhost:8081/api/products?page_size=1000&filter=product_nameLIKE%25" + this.productName + "%25", true);
+      xhttp.open("GET", "http://localhost:8081/api/products?page_size=1000&filter=product_nameLIKE%25" + this.productName + "%25%3Bgroup_id=" + this.groupId + "%3Bcreated_user_id=" + this.createdId + "%3Bcreated_at>=" + this.selectedDateFrom.toISOString() + "%3Bcreated_at<=" + this.selectedDateTo.toISOString(), true);
       xhttp.send(); 
     }
-  }
+    
+  },
+  
+  
+
   
 };
 </script>
