@@ -194,7 +194,7 @@ func (c *DAO) GetProductsByFilter(ctx context.Context, pageSize int, pageToken i
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Preload(clause.Associations).Find(&prov).Error
+	er := thisDB.Preload(clause.Associations).Order("product_id").Find(&prov).Error
 	if er != nil {
 		return nil, er
 	}
@@ -211,6 +211,7 @@ func (c *DAO) CreateProduct(ctx context.Context, product *model.Product) error{
 
 func (c *DAO) UpdateProduct(ctx context.Context, id uint, product *model.Product) error{
 	product.ProductID = id
+	fmt.Println(product)
 	er := gDB.WithContext(ctx).Model(&model.Product{}).Where(&model.Product{ProductID: id}).Save(&product).Error
 	return er
 }
@@ -255,7 +256,7 @@ func (c *DAO) GetBillsByFilter(ctx context.Context, pageSize int, pageToken int,
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Preload("Details.Product").Find(&prov).Error
+	er := thisDB.Preload("Details.Product").Order("bill_id").Find(&prov).Error
 	if er != nil {
 		return nil, er
 	}
@@ -353,7 +354,7 @@ func (c *DAO) GetImportsByFilter(ctx context.Context, pageSize int, pageToken in
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Preload("Details.Product").Find(&prov).Error
+	er := thisDB.Preload("Details.Product").Order("product_id").Find(&prov).Error
 	if er != nil {
 		return nil, er
 	}

@@ -64,15 +64,6 @@
      </md-field>
      
      <md-dialog-actions>
-        <md-dialog-alert
-      :md-active.sync="successAlert"
-      md-content="Your post has been deleted!"
-      md-confirm-text="Cool!" />
-
-    <md-dialog-alert
-      :md-active.sync="failAlert"
-      md-title="Post created!"
-      md-content="Your post <strong>Material Design is awesome</strong> has been created." />
         <md-button class="md-primary" @click="showDialog = false">Close</md-button>
         <md-button type="submit" class="md-primary" @click="showDialog = false;formSubmit()">Save</md-button>
       </md-dialog-actions>

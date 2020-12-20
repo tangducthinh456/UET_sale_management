@@ -39,19 +39,7 @@ var (
 		GroupName: "butbibabi",
 		//Products:  nil,
 	}
-	product = model.Product{
-		//ProductID:   0,
-		ProductName:   "but bi ba bi",
-		Cost:          15000,
-		Price:         12000,
-		Quantity:      12,
-		Brand:         "Thien Long",
-		Position:      "Ngan 1",
-		GroupID:       1,
-		CreatedUserID: 1,
-		Description:   "but bi thien long",
-		CreatedAt:     time.Now(),
-	}
+
 	bill = model.Bill{
 		CustomerID:     1,
 		Note:           "bill ban 1 but",

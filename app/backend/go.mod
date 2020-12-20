@@ -10,6 +10,7 @@ require (
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.14.2 // indirect
 	github.com/onsi/gomega v1.10.4 // indirect
+	github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc
 	github.com/spf13/viper v1.7.1
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
