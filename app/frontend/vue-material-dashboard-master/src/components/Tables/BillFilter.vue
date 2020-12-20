@@ -1,12 +1,8 @@
 <template>
   <div>
-    <md-field >
-      <label>Product Name</label>
-      <md-input v-model="productName"  ></md-input>
-    </md-field>
     
-    <md-autocomplete  v-model="selectedGroup" :md-options="createdGroup">
-      <label>Group</label>
+    <md-autocomplete  v-model="selectedCustomer" :md-options="createdCustomer">
+      <label>Customer</label>
     </md-autocomplete>
 
     <md-autocomplete  v-model="selectedCreated" :md-options="createdUser">
@@ -22,8 +18,8 @@
 </template>
 
 <script>
-  var group = [];
- var groupFull = [];
+  var customer = [];
+ var customerFull = [];
   var user = [];
   var userFull = [];
   
@@ -31,27 +27,28 @@
   //xhttp.send();
 
   export default {
-    name: 'TextFields',
+    name: 'bill-filter',
     created: function(){
-      var getGroup = function() {
+      var getCustomer = function() {
           var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-            var response = JSON.parse(this.responseText)
-            while(group.length > 0){ 
-              group.pop();
-              groupFull.pop();
+            var response = JSON.parse(this.responseText).customers
+            while(customer.length > 0){ 
+              customer.pop();
+              customerFull.pop();
             }
             for (var i = 0; i < response.length; i++){
-              group.push(response[i].group_name);
-              groupFull.push(response[i]);
+              customer.push(response[i].customer_name);
+              customerFull.push(response[i]);
             }
+            //console.log(response);
       }
       };
-      xhttp.open("GET", "http://localhost:8081/api/groups", true);
+      xhttp.open("GET", "http://localhost:8081/api/customers?page_size=100", true);
       xhttp.send(); 
       };
-      getGroup();
+      getCustomer();
 
       var getUser = function() {
           var xhttp = new XMLHttpRequest();
@@ -63,7 +60,7 @@
               userFull.pop();
             }
             for (var i = 0; i < response.users.length; i++){
-              user.push(response.users[i].name) 
+              user.push(response.users[i].name)
               userFull.push(response.users[i]);
             }
       }
@@ -84,37 +81,33 @@
       textarea: null,
       autogrow: null,
       disabled: null,
-      productName: null,
-      selectedGroup: null,
+      
+      selectedCustomer: null,
       selectedDateFrom: null,
       selectedDateTo: null,
       selectedCreated: null,
       createdId : null,
-      groupId : null,
-      createdGroup: group,
-      createdUser: user,
+      customerId : null,
+      createdCustomer: customer,
+      createdUser: user
     }),
     watch :{
-      selectedGroup : function(){
-        for (var i = 0; i < groupFull.length; i++){
-          if (groupFull[i].group_name == this.selectedGroup){
-            this.groupId = groupFull[i].group_id;
+      selectedCustomer : function(){
+        for (var i = 0; i < customerFull.length; i++){
+          if (customerFull[i].customer_name == this.selectedCustomer){
+            this.customerId = groupFull[i].customer_id;
           }
         }
-        this.$emit('update:groupId', this.groupId);
+        this.$emit('update:customerId', this.customerId);
       },
       selectedCreated : function(){
         for (var i = 0; i < userFull.length; i++){
-          if (userFull[i].name == this.selectedCreated){
+          if (userFull[i].username == this.selectedCreated){
             this.createdId = userFull[i].id;
           }
         }
-        console.log(this.createdId);
+        
         this.$emit('update:createdId', this.createdId);
-      },
-      productName : function(){
-        this.$emit('update:productName', this.productName);
-       
       },
       selectedDateFrom : function(){
         this.$emit('update:selectedDateFrom', this.selectedDateFrom);

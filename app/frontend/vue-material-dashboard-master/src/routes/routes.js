@@ -9,6 +9,8 @@ import Maps from "@/pages/Maps.vue";
 import Products from "@/pages/Products.vue";
 import Notifications from "@/pages/Notifications.vue";
 import UpgradeToPRO from "@/pages/UpgradeToPRO.vue";
+import Bill from "@/pages/Bill.vue";
+import Login from "@/pages/Login.vue"
 
 const routes = [
   {
@@ -16,6 +18,11 @@ const routes = [
     component: DashboardLayout,
     redirect: "/dashboard",
     children: [
+      {
+        path: "login",
+        name: "Login",
+        component: Login
+      },
       {
         path: "dashboard",
         name: "Dashboard",
@@ -35,6 +42,11 @@ const routes = [
         path: "product",
         name: "Products",
         component: Products
+      },
+      {
+        path: "bill",
+        name: "Bill",
+        component: Bill
       },
       {
         path: "typography",

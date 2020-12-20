@@ -2,7 +2,7 @@ package router
 
 import (
 	"SaleManagement/webserver/controller"
-	"SaleManagement/webserver/middleware"
+	//"SaleManagement/webserver/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +17,7 @@ func configCORS() gin.HandlerFunc {
 func NewRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(configCORS())
-	var authMid = new(middleware.AuthMiddleware)
+	//var authMid = new(middleware.AuthMiddleware)
 	api := router.Group("/api")
 	{
 		//api.POST("/login")
@@ -26,8 +26,8 @@ func NewRouter() *gin.Engine {
 		user := api.Group("/users")
 		{
 			user.GET("", controller.HandleGETUsers)
-			user.Use(authMid.TokenAuth())
-			user.Use(authMid.CheckRoleLevelMid([]int64{0}))
+			//user.Use(authMid.TokenAuth())
+			//user.Use(authMid.CheckRoleLevelMid([]int64{0}))
 			user.POST("", controller.HandlePOSTUsers)
 			user.PUT("/:user", controller.HandlePUTUser)
 			user.DELETE("/:user", controller.HandleDisableUser)
@@ -37,8 +37,8 @@ func NewRouter() *gin.Engine {
 		provider := api.Group("/providers")
 		{
 			provider.GET("", controller.HandleGETProviders)
-			provider.Use(authMid.TokenAuth())
-			provider.Use(authMid.CheckRoleLevelMid([]int64{0}))
+			//provider.Use(authMid.TokenAuth())
+			//provider.Use(authMid.CheckRoleLevelMid([]int64{0}))
 			provider.POST("", controller.HandlePOSTProviders)
 			provider.PUT("/:provider", controller.HandlePUTProvider)
 			provider.DELETE("/:provider", controller.HandleDisableProvider)
@@ -47,8 +47,8 @@ func NewRouter() *gin.Engine {
 
 		customer := api.Group("/customers")
 		{
-			customer.Use(authMid.TokenAuth())
-			customer.Use(authMid.CheckRoleLevelMid([]int64{0}))
+			//customer.Use(authMid.TokenAuth())
+			//customer.Use(authMid.CheckRoleLevelMid([]int64{0}))
 			customer.GET("", controller.HandleGETCustomers)
 			customer.POST("", controller.HandlePOSTCustomers)
 			customer.PUT("/:customer", controller.HandlePUTCustomer)
@@ -59,8 +59,8 @@ func NewRouter() *gin.Engine {
 		group := api.Group("/groups")
 		{
 			group.GET("", controller.HandleGetGroups)
-			group.Use(authMid.TokenAuth())
-			group.Use(authMid.CheckRoleLevelMid([]int64{0, 1}))
+			//group.Use(authMid.TokenAuth())
+			//group.Use(authMid.CheckRoleLevelMid([]int64{0, 1}))
 			//group.GET("", controller.HandleGetGroups)
 			group.POST("", controller.HandlePostGroup)
 		}
@@ -78,8 +78,8 @@ func NewRouter() *gin.Engine {
 
 		bill := api.Group("/bills")
 		{
-			bill.Use(authMid.TokenAuth())
-			bill.Use(authMid.CheckRoleLevelMid([]int64{0, 1}))
+			//bill.Use(authMid.TokenAuth())
+			//bill.Use(authMid.CheckRoleLevelMid([]int64{0, 1}))
 			bill.GET("", controller.HandleGETBills)
 			bill.POST("", controller.HandlePOSTBills)
 			bill.PUT("/:bill", controller.HandlePUTBill)
@@ -88,8 +88,8 @@ func NewRouter() *gin.Engine {
 
 		imp := api.Group("/imports")
 		{
-			imp.Use(authMid.TokenAuth())
-			imp.Use(authMid.CheckRoleLevelMid([]int64{0, 2}))
+			//imp.Use(authMid.TokenAuth())
+			//imp.Use(authMid.CheckRoleLevelMid([]int64{0, 2}))
 			imp.GET("", controller.HandleGETImports)
 			imp.POST("", controller.HandlePOSTImports)
 			imp.PUT("/:import", controller.HandlePUTImport)

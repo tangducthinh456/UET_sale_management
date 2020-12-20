@@ -8,7 +8,7 @@
       <div>
       <md-dialog-alert
       :md-active.sync="successAlert"
-      md-content="Product has been created!"
+      md-content="Bill has been created!"
       md-confirm-text="Ok" />
 
     <md-dialog-alert
@@ -17,19 +17,14 @@
       md-content="Created Fail!" />
     <md-dialog :md-active.sync="showDialog">
       
-      <md-dialog-title>Product</md-dialog-title>
+      <md-dialog-title>Customer</md-dialog-title>
       
       <md-dialog-content>
       
       <div style="margin: 30px">
       <form class="md-layout">
-          
-      <md-field>
-          <label>Product Name</label>
-         <md-input v-model="productNameForm"></md-input>   
-     </md-field>
      
-     <md-autocomplete   v-model="selectedGroup" :md-options="createdGroup">
+     <md-autocomplete   v-model="selectedCustomer" :md-options="createdCustomer">
       <label>Group</label>
     </md-autocomplete>
      
@@ -77,7 +72,7 @@
       </md-dialog-actions> -->
     </md-dialog>
 
-    <md-button class="md-primary md-raised" @click="showDialog = true"><md-icon>library_add</md-icon>Create Product</md-button>
+    <md-button class="md-primary md-raised" @click="showDialog = true"><md-icon>library_add</md-icon>Create Bill</md-button>
   </div>
       
         
@@ -88,7 +83,7 @@
             <p class="category">Here is a filter for this table</p>
           </md-card-header>
           <md-card-content>
-            <simple-filter :productName.sync="productName" :createdId.sync="createdId" :groupId.sync="groupId" :selectedDateFrom.sync="selectedDateFrom" :selectedDateTo.sync="selectedDateTo"></simple-filter>
+            <bill-filter  :createdId.sync="createdId" :customerId.sync="customerId" :selectedDateFrom.sync="selectedDateFrom" :selectedDateTo.sync="selectedDateTo"></bill-filter>
           </md-card-content>
         </md-card>
       </div>
@@ -96,12 +91,12 @@
         class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
         <md-card>
           <md-card-header data-background-color="blue">
-            <h4 class="title">Product</h4>
-            <p class="category">List product in shop</p>
+            <h4 class="title">Bill</h4>
+            <p class="category">List bill</p>
           </md-card-header>
           
           <md-card-content>
-            <simple-product table-header-color="blue" :product-name="productName" :created-id="createdId" :group-id="groupId" :selected-date-from="selectedDateFrom" :selected-date-to="selectedDateTo"></simple-product>
+            <simple-bill table-header-color="blue" :created-id="createdId" :customer-id="customerId" :selected-date-from="selectedDateFrom" :selected-date-to="selectedDateTo"></simple-bill>
           </md-card-content>
         </md-card>
       </div>
@@ -113,35 +108,35 @@
 
 import axios from 'axios';
 
-var group = [];
- var groupFull = [];
+var customer = [];
+ var customerFull = [];
   var user = [];
   var userFull = [];
 
-import { SimpleFilter, SimpleProduct } from "@/components";
+import { BillFilter, SimpleBill } from "@/components";
 //import Filter from '../components/Tables/Filter.vue';
 
 export default {
   created: function(){
-      var getGroup = function() {
+      var getCustomer = function() {
           var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText)
-            while(group.length > 0){ 
-              group.pop();
-              groupFull.pop();
+            while(customer.length > 0){ 
+              customer.pop();
+              customerFull.pop();
             }
             for (var i = 0; i < response.length; i++){
-              group.push(response[i].group_name);
-              groupFull.push(response[i]);
+              customer.push(response[i].group_name);
+              customerFull.push(response[i]);
             }
       }
       };
-      xhttp.open("GET", "http://localhost:8081/api/groups", true);
+      xhttp.open("GET", "http://localhost:8081/api/customers?page_size=100", true);
       xhttp.send(); 
       };
-      getGroup();
+      getCustomer();
 
       var getUser = function() {
           var xhttp = new XMLHttpRequest();
@@ -164,21 +159,21 @@ export default {
     },
   data: function () {
         return {
-            productName: null,
-            groupId: null,
+            
+            customerId: null,
             createdId: null,
             selectedDateFrom : null,
             selectedDateTo : null,
             showDialog: false,
             
-            createdGroup: group,
+            createdCustomer: customer,
 
             failAlert: false,
             successAlert: false,
 
-            productNameForm: null,
-            selectedGroup: null,
-            groupIdForm: null,
+            
+            selectedCustomer: null,
+            customerIdForm: null,
             costForm: null,
             priceForm: null,
             quantityForm: null,
@@ -190,12 +185,12 @@ export default {
   methods: {
      formSubmit(e){
        
-          for (var i = 0; i < groupFull.length; i++){
-          if (groupFull[i].group_name == this.selectedGroup){
-            this.groupIdForm = groupFull[i].group_id;
+          for (var i = 0; i < customerFull.length; i++){
+          if (customerFull[i].customer_name == this.selectedCustomer){
+            this.customerIdForm = customerFull[i].customer_id;
           }
         }
-          axios.post('http://localhost:8081/api/products',{
+          axios.post('http://localhost:8081/api/bills',{
              product_name: this.productNameForm,
              group_id: this.groupIdForm,
              created_user_id: 1,//parseInt(localStorage.getItem("user_id")), /////// Fix this  
@@ -219,8 +214,8 @@ export default {
      }
   },
   components: {
-    SimpleFilter,
-    SimpleProduct
+    BillFilter,
+    SimpleBill
   }
 };
 </script>

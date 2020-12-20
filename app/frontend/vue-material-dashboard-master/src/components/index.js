@@ -8,7 +8,9 @@ import NavTabsTable from "./Tables/NavTabsTable.vue";
 import OrderedTable from "./Tables/OrderedTable.vue";
 import SimpleTable from "./Tables/SimpleTable.vue";
 import SimpleProduct from "./Tables/SimpleProduct.vue";
-import SimpleFilter from "./Tables/SimpleFilter.vue"
+import SimpleFilter from "./Tables/SimpleFilter.vue";
+import SimpleBill from "./Tables/SimpleBill.vue";
+import BillFilter from "./Tables/BillFilter.vue";
 
 export {
   ChartCard,
@@ -18,5 +20,7 @@ export {
   OrderedTable,
   SimpleTable,
   SimpleProduct,
-  SimpleFilter
+  SimpleFilter,
+  SimpleBill,
+  BillFilter
 };

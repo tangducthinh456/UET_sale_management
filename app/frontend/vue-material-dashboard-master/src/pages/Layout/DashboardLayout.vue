@@ -19,7 +19,7 @@
         <md-icon>shopping_cart</md-icon>
         <p>Product</p>
       </sidebar-link>
-      <sidebar-link to="/table">
+      <sidebar-link to="/bill">
         <md-icon>content_paste</md-icon>
         <p>Bill</p>
       </sidebar-link>
