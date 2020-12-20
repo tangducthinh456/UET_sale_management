@@ -29,7 +29,7 @@ func HandlePOSTProducts(c *gin.Context){
 	err := c.Bind(&product)
 	if err != nil{
 		ResponseError(c, err, http.StatusBadRequest)
-		log.Print("bind json error")
+		log.Printf("bind json error %s", err.Error())
 		return
 	}
 

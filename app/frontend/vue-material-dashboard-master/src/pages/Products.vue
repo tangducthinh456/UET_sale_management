@@ -6,41 +6,84 @@
       >
      
       <div>
+      <md-dialog-alert
+      :md-active.sync="successAlert"
+      md-content="Product has been created!"
+      md-confirm-text="Ok" />
+
+    <md-dialog-alert
+      :md-active.sync="failAlert"
+      md-title="Error!"
+      md-content="Created Fail!" />
     <md-dialog :md-active.sync="showDialog">
+      
       <md-dialog-title>Product</md-dialog-title>
+      
+      <md-dialog-content>
+      
       <div style="margin: 30px">
-      <form class="md-layout" method="POST" action="localhost:8081/api/products">
+      <form class="md-layout">
           
       <md-field>
           <label>Product Name</label>
-         <md-input></md-input>
+         <md-input v-model="productNameForm"></md-input>   
      </md-field>
-    
+     
+     <md-autocomplete   v-model="selectedGroup" :md-options="createdGroup">
+      <label>Group</label>
+    </md-autocomplete>
+     
     <md-field >
           <label>Cost ($)</label>
-         <md-input></md-input>
+         <md-input v-model="costForm"></md-input>
      </md-field>
 
     <md-field >
           <label>Price ($)</label>
-         <md-input></md-input>
+         <md-input v-model="priceForm"></md-input>
      </md-field>
 
     <md-field >
-          <label>Product Name</label>
-         <md-input></md-input>
+          <label>Quantity</label>
+         <md-input v-model="quantityForm"></md-input>
      </md-field>
 
+     <md-field >
+          <label>Brand</label>
+         <md-input v-model="brandForm"></md-input>
+     </md-field>
 
+     <md-field >
+          <label>Position</label>
+         <md-input v-model="positionForm"></md-input>
+     </md-field>
 
-      </form>
-      </div>
+     <md-field >
+          <label>Description</label>
+         <md-input v-model="descriptionForm"></md-input>
+     </md-field>
+     
+     <md-dialog-actions>
+        <md-dialog-alert
+      :md-active.sync="successAlert"
+      md-content="Your post has been deleted!"
+      md-confirm-text="Cool!" />
 
-
-      <md-dialog-actions>
+    <md-dialog-alert
+      :md-active.sync="failAlert"
+      md-title="Post created!"
+      md-content="Your post <strong>Material Design is awesome</strong> has been created." />
         <md-button class="md-primary" @click="showDialog = false">Close</md-button>
-        <md-button class="md-primary" @click="showDialog = false">Save</md-button>
+        <md-button type="submit" class="md-primary" @click="showDialog = false;formSubmit()">Save</md-button>
       </md-dialog-actions>
+      </form>
+      
+      </div>
+       </md-dialog-content>
+      <!-- <md-dialog-actions>
+        <md-button class="md-primary" @click="showDialog = false">Close</md-button>
+        <md-button  class="md-primary" @click="showDialog = false">Save</md-button>
+      </md-dialog-actions> -->
     </md-dialog>
 
     <md-button class="md-primary md-raised" @click="showDialog = true"><md-icon>library_add</md-icon>Create Product</md-button>
@@ -75,12 +118,59 @@
   </div>
 </template>
 
-<script>
+<script >
+
+import axios from 'axios';
+
+var group = [];
+ var groupFull = [];
+  var user = [];
+  var userFull = [];
+
 import { SimpleFilter, SimpleProduct } from "@/components";
 //import Filter from '../components/Tables/Filter.vue';
 
 export default {
-  
+  created: function(){
+      var getGroup = function() {
+          var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText)
+            while(group.length > 0){ 
+              group.pop();
+              groupFull.pop();
+            }
+            for (var i = 0; i < response.length; i++){
+              group.push(response[i].group_name);
+              groupFull.push(response[i]);
+            }
+      }
+      };
+      xhttp.open("GET", "http://localhost:8081/api/groups", true);
+      xhttp.send(); 
+      };
+      getGroup();
+
+      var getUser = function() {
+          var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText)
+            //console.log(this.responseText)
+            for (var i = 0; i < response.users.length; i++){
+              user.push(response.users[i].username)
+              userFull.push(response.users[i]);
+            }
+      }
+      };
+      xhttp.open("GET", "http://localhost:8081/api/users?page_size=100", true);
+      xhttp.send(); 
+      };
+      getUser();
+    
+      
+    },
   data: function () {
         return {
             productName: null,
@@ -89,42 +179,54 @@ export default {
             selectedDateFrom : null,
             selectedDateTo : null,
             showDialog: false,
+            
+            createdGroup: group,
 
-      //       form: {
-      //          firstName: null,
-      //           lastName: null,
-      //           gender: null,
-      //            age: null,
-      //             email: null,
-      //        },
-      // userSaved: false,
-      // sending: false,
-      // lastUser: null
+            failAlert: false,
+            successAlert: false,
+
+            productNameForm: null,
+            selectedGroup: null,
+            groupIdForm: null,
+            costForm: null,
+            priceForm: null,
+            quantityForm: null,
+            brandForm: null,
+            positionForm: null,
+            descriptionForm: null
        };
   },
-  // validations: {
-  //     form: {
-  //       firstName: {
-  //         required,
-  //         minLength: minLength(3)
-  //       },
-  //       lastName: {
-  //         required,
-  //         minLength: minLength(3)
-  //       },
-  //       age: {
-  //         required,
-  //         maxLength: maxLength(3)
-  //       },
-  //       gender: {
-  //         required
-  //       },
-  //       email: {
-  //         required,
-  //         email
-  //       }
-  //     }
-  //   },
+  methods: {
+     formSubmit(e){
+       
+          for (var i = 0; i < groupFull.length; i++){
+          if (groupFull[i].group_name == this.selectedGroup){
+            this.groupIdForm = groupFull[i].group_id;
+          }
+        }
+          axios.post('http://localhost:8081/api/products',{
+             product_name: this.productNameForm,
+             group_id: this.groupIdForm,
+             created_user_id: 1, /////// Fix this  
+             cost: parseFloat(this.costForm),
+             price: parseFloat(this.priceForm),
+             quantity: parseInt(this.quantityForm),
+             brand: this.brandForm,
+             position: this.positionForm,
+             description: this.descriptionForm
+          }).then((response) =>{
+
+             if (response.status == 200){
+               this.$set(this.$data, 'successAlert','true');
+             }
+             else {
+               this.$set(this.$data, 'failAlert','true');
+             }
+          }).catch((error) =>{
+            this.$set(this.$data, 'failAlert','true');
+          })
+     }
+  },
   components: {
     SimpleFilter,
     SimpleProduct

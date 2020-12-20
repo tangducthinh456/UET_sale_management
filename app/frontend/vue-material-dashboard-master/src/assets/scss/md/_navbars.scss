@@ -265,7 +265,7 @@
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
   border-radius: $border-radius-base !important;
   overflow: hidden;
-
+  z-index: 110;
   .md-list .md-list-item a{
     font-size: 10px;
   }

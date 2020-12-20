@@ -38,7 +38,10 @@
       xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText)
-            //console.log(response[0].group_name)
+            while(group.length > 0){ 
+              group.pop();
+              groupFull.pop();
+            }
             for (var i = 0; i < response.length; i++){
               group.push(response[i].group_name);
               groupFull.push(response[i]);
@@ -55,7 +58,10 @@
       xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText)
-            //console.log(this.responseText)
+            while(user.length > 0){ 
+              user.pop();
+              userFull.pop();
+            }
             for (var i = 0; i < response.users.length; i++){
               user.push(response.users[i].username)
               userFull.push(response.users[i]);

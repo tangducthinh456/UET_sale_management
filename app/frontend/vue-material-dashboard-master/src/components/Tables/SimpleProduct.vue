@@ -2,8 +2,8 @@
   <div>
     <md-table v-model="products" :table-header-color="tableHeaderColor">
       <md-table-row slot="md-table-row" slot-scope="{ item }">
-        <md-table-cell md-label="Product ID">{{ item.id }}</md-table-cell>
-        <md-table-cell md-label="Name">{{ item.name }}</md-table-cell>
+        <md-table-cell md-label="Product ID">{{ item.product_id }}</md-table-cell>
+        <md-table-cell md-label="Name">{{ item.product_name }}</md-table-cell>
         <md-table-cell md-label="Price ($)">{{ item.price }}</md-table-cell>
         <md-table-cell md-label="Quantity">{{ item.quantity }}</md-table-cell>
       </md-table-row>
@@ -59,7 +59,8 @@ export default {
             var response = JSON.parse(this.responseText)
             var varib = response.products
             for (var i = 0; i < varib.length; i++){
-              prod.push({id: varib[i].product_id, name : varib[i].product_name, price : varib[i].price, quantity: varib[i].quantity})
+              prod.push(varib[i]);
+              //prod.push({id: varib[i].product_id, name : varib[i].product_name, price : varib[i].price, quantity: varib[i].quantity})
             }
       }
       };

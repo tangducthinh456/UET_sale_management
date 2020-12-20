@@ -68,7 +68,7 @@ func NewRouter() *gin.Engine {
 		product := api.Group("/products")
 		{
 			product.GET("", controller.HandleGETProducts)
-			product.Use(authMid.TokenAuth())
+			//product.Use(authMid.TokenAuth())
 
 			product.POST("", controller.HandlePOSTProducts)
 			product.PUT("/:product", controller.HandlePUTProduct)
