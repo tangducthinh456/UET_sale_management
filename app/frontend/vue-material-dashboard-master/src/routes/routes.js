@@ -1,7 +1,7 @@
 import DashboardLayout from "@/pages/Layout/DashboardLayout.vue";
 
 import Dashboard from "@/pages/Dashboard.vue";
-import UserProfile from "@/pages/UserProfile.vue";
+import User from "@/pages/User.vue";
 import TableList from "@/pages/TableList.vue";
 import Typography from "@/pages/Typography.vue";
 import Icons from "@/pages/Icons.vue";
@@ -13,16 +13,13 @@ import Bill from "@/pages/Bill.vue";
 import Login from "@/pages/Login.vue"
 
 const routes = [
+  
   {
     path: "/",
     component: DashboardLayout,
     redirect: "/dashboard",
     children: [
-      {
-        path: "login",
-        name: "Login",
-        component: Login
-      },
+      
       {
         path: "dashboard",
         name: "Dashboard",
@@ -30,8 +27,8 @@ const routes = [
       },
       {
         path: "user",
-        name: "User Profile",
-        component: UserProfile
+        name: "User",
+        component: User
       },
       {
         path: "table",
@@ -77,6 +74,11 @@ const routes = [
         component: UpgradeToPRO
       }
     ]
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login  
   }
 ];
 

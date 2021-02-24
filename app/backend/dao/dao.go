@@ -123,7 +123,7 @@ func (c *DAO) GetProvidersByFilter(ctx context.Context, pageSize int, pageToken 
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Find(&prov).Error
+	er := thisDB.Order("product_id").Find(&prov).Error
 	if er != nil {
 		return nil, er
 	}
@@ -354,7 +354,7 @@ func (c *DAO) GetImportsByFilter(ctx context.Context, pageSize int, pageToken in
 	}
 	offset := pageToken - 1
 	thisDB = thisDB.Offset(offset).Limit(pageSize)
-	er := thisDB.Preload("Details.Product").Order("product_id").Find(&prov).Error
+	er := thisDB.Preload("Details.Product").Find(&prov).Error
 	if er != nil {
 		return nil, er
 	}

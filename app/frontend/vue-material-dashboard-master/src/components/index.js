@@ -11,6 +11,7 @@ import SimpleProduct from "./Tables/SimpleProduct.vue";
 import SimpleFilter from "./Tables/SimpleFilter.vue";
 import SimpleBill from "./Tables/SimpleBill.vue";
 import BillFilter from "./Tables/BillFilter.vue";
+import SimpleUser from "./Tables/SimpleUser.vue"
 
 export {
   ChartCard,
@@ -22,5 +23,6 @@ export {
   SimpleProduct,
   SimpleFilter,
   SimpleBill,
-  BillFilter
+  BillFilter,
+  SimpleUser
 };

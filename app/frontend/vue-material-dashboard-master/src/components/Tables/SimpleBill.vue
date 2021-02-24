@@ -168,6 +168,9 @@ export default {
   props: ['createdId', 'selectedDateFrom', 'selectedDateTo', 'customerId'],
   watch: {
   customerId: 'reload',
+  createdId: 'reload',
+  selectedDateTo: 'reload',
+  selectedDateFrom: 'reload',
   },
   methods: {
     setForm(item){
@@ -239,7 +242,7 @@ export default {
             }
             //console.log("aaaaaaaaa");
             var response = JSON.parse(this.responseText)
-            var varib = response.products
+            var varib = response.bills
             for (var i = 0; i < varib.length; i++){
               varib[i].displayTime = varib[i].created_at.replace(/T/g,' ').replace(/\+(.*)$/g,'');
               varib[i].total = 0.0;
@@ -256,12 +259,12 @@ export default {
             }
       }
       };
-      var url = "http://localhost:8081/api/products?page_size=2000&filter=";
+      var url = "http://localhost:8081/api/bills?page_size=2000&filter=";
       if (this.customerId) {
-           url += "%3Bgroup_id=" + this.groupId; 
+           url += "%3Bcustomer_id=" + this.customerId; 
       }
       if (this.createdId) {
-           url += "%3Bcreated_id=" + this.createdId; 
+           url += "%3Bcreated_user_id=" + this.createdId; 
       }
       if (this.selectedDateFrom) {
            //console.log(this.selectedDateFrom)

@@ -25,7 +25,7 @@
       <form class="md-layout">
      
      <md-autocomplete   v-model="selectedCustomer" :md-options="createdCustomer">
-      <label>Group</label>
+      <label>Customer</label>
     </md-autocomplete>
      
     <md-field >
@@ -122,13 +122,13 @@ export default {
           var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-            var response = JSON.parse(this.responseText)
+            var response = JSON.parse(this.responseText).customers
             while(customer.length > 0){ 
               customer.pop();
               customerFull.pop();
             }
             for (var i = 0; i < response.length; i++){
-              customer.push(response[i].group_name);
+              customer.push(response[i].customer_name);
               customerFull.push(response[i]);
             }
       }

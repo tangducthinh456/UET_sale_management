@@ -95,19 +95,20 @@
       selectedCustomer : function(){
         for (var i = 0; i < customerFull.length; i++){
           if (customerFull[i].customer_name == this.selectedCustomer){
-            this.customerId = groupFull[i].customer_id;
+            this.customerId = customerFull[i].customer_id;
           }
         }
         this.$emit('update:customerId', this.customerId);
       },
       selectedCreated : function(){
         for (var i = 0; i < userFull.length; i++){
-          if (userFull[i].username == this.selectedCreated){
+          if (userFull[i].name == this.selectedCreated){
             this.createdId = userFull[i].id;
           }
         }
         
         this.$emit('update:createdId', this.createdId);
+        
       },
       selectedDateFrom : function(){
         this.$emit('update:selectedDateFrom', this.selectedDateFrom);

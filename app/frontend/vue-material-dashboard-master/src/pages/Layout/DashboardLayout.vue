@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
     <notifications></notifications>
-
+    <div id="message"></div>
     <side-bar
       :sidebar-item-color="sidebarBackground"
       :sidebar-background-image="sidebarBackgroundImage"
@@ -19,6 +19,18 @@
         <md-icon>shopping_cart</md-icon>
         <p>Product</p>
       </sidebar-link>
+      <!-- <sidebar-link to="/import">
+        <md-icon>library_books</md-icon>
+        <p>Product</p>
+      </sidebar-link>
+      <sidebar-link to="/customer">
+        <md-icon>shopping_cart</md-icon>
+        <p>Product</p>
+      </sidebar-link>
+      <sidebar-link to="/provider">
+        <md-icon>person</md-icon>
+        <p>Product</p>
+      </sidebar-link> -->
       <sidebar-link to="/bill">
         <md-icon>content_paste</md-icon>
         <p>Bill</p>
@@ -62,6 +74,32 @@
 </template>
 
 <script>
+
+
+window.onload = function() {
+  // Get a reference to the div on the page that will display the
+  // message text.
+  var messageEle = document.getElementById('message');
+
+  // A function to process messages received by the window.
+  function receiveMessage(e) {
+    // Check to make sure that this message came from the correct domain.
+    if (e.origin !== "http://localhost")
+      return;
+
+    // Update the div element to display the message.
+    messageEle.innerHTML = "Message Received: " + e.data;
+    localStorage.setItem("user_id", e.data.userID);
+    localStorage.setItem("user_role", e.data.role);
+  }
+
+  // Setup an event listener that calls receiveMessage() when the window
+  // receives a new MessageEvent.
+  window.addEventListener('message', receiveMessage);
+}
+
+
+
 import TopNavbar from "./TopNavbar.vue";
 import ContentFooter from "./ContentFooter.vue";
 import DashboardContent from "./Content.vue";
